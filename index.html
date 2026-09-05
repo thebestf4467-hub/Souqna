@@ -3093,5 +3093,754 @@ function(settings){
 };
 
 </script>
+<!-- =====================================================
+     SOUQNA AI SITE BUILDER - GITHUB VERSION
+====================================================== -->
+
+<style>
+#aiSiteBuilderAdmin{
+  direction:rtl;
+}
+
+.builder-box{
+  background:#fff;
+  border:1px solid #e2e7e4;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.builder-textarea{
+  width:100%;
+  min-height:150px;
+  border:1px solid #d8dfdc;
+  border-radius:14px;
+  padding:14px;
+  font:inherit;
+  resize:vertical;
+  outline:none;
+}
+
+.builder-preview{
+  width:100%;
+  height:650px;
+  border:1px solid #d8dfdc;
+  border-radius:16px;
+  background:white;
+}
+
+.builder-status{
+  margin-top:12px;
+  padding:13px;
+  border-radius:12px;
+  display:none;
+  line-height:1.7;
+}
+
+.builder-status.ok{
+  display:block;
+  background:#ecf9f1;
+  color:#087f4f;
+}
+
+.builder-status.error{
+  display:block;
+  background:#fff0f0;
+  color:#d93025;
+}
+
+.builder-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+
+.builder-full{
+  width:100%;
+}
+
+.builder-info{
+  color:#7a8580;
+  font-size:13px;
+  line-height:1.8;
+}
+
+@media(max-width:700px){
+  .builder-preview{
+    height:520px;
+  }
+}
+</style>
+
+
+<script>
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let builderPendingHTML = "";
+let builderPendingSHA = "";
+let builderPendingPrompt = "";
+
+
+/* =====================================================
+   CREATE ADMIN INTERFACE
+===================================================== */
+
+function createAISiteBuilder(){
+
+  const sidebar =
+    document.getElementById("sidebar");
+
+  if(
+    sidebar &&
+    !document.getElementById("aiSiteBuilderButton")
+  ){
+
+    const button =
+      document.createElement("button");
+
+    button.id =
+      "aiSiteBuilderButton";
+
+    button.className =
+      "side-link";
+
+    button.innerHTML =
+      "🧠 AI Site Builder";
+
+    button.onclick = function(){
+
+      if(typeof openView === "function"){
+
+        openView(
+          "aiSiteBuilderAdmin",
+          button
+        );
+
+      }else{
+
+        document
+          .querySelectorAll(".view")
+          .forEach(v => {
+            v.style.display = "none";
+          });
+
+        const target =
+          document.getElementById(
+            "aiSiteBuilderAdmin"
+          );
+
+        if(target){
+          target.style.display = "block";
+        }
+      }
+
+
+      const title =
+        document.getElementById(
+          "adminPageTitle"
+        );
+
+      if(title){
+
+        title.textContent =
+          "🧠 AI Site Builder";
+
+      }
+    };
+
+
+    const oldAI =
+      document.getElementById(
+        "aiDesignerButton"
+      );
+
+
+    if(
+      oldAI &&
+      oldAI.parentNode
+    ){
+
+      oldAI.insertAdjacentElement(
+        "afterend",
+        button
+      );
+
+    }else{
+
+      sidebar.appendChild(button);
+
+    }
+  }
+
+
+  const content =
+    document.querySelector(
+      ".admin-content"
+    );
+
+
+  if(
+    content &&
+    !document.getElementById(
+      "aiSiteBuilderAdmin"
+    )
+  ){
+
+    const page =
+      document.createElement("div");
+
+
+    page.id =
+      "aiSiteBuilderAdmin";
+
+    page.className =
+      "view";
+
+
+    page.innerHTML = `
+
+      <div class="builder-box">
+
+        <h2 style="margin-top:0">
+          🧠 تعديل كود سوقنا بالذكاء الاصطناعي
+        </h2>
+
+        <p class="builder-info">
+          هذا المساعد يقرأ ملف
+          <b>index.html</b>
+          الموجود في GitHub ويجهز نسخة معدلة.
+          لن يتم حفظ أي تعديل في GitHub
+          إلا بعد ضغطك على تطبيق.
+        </p>
+
+        <textarea
+          id="builderPrompt"
+          class="builder-textarea"
+          placeholder="مثال:
+عندما أضيف إعلان من لوحة الإعلانات،
+أظهره في الصفحة الرئيسية داخل سلايدر أفقي،
+واجعل كل إعلان قابل للضغط."
+        ></textarea>
+
+        <button
+          id="builderGenerateBtn"
+          class="btn btn-primary builder-full"
+          style="margin-top:12px"
+          onclick="builderGeneratePreview()">
+          ✨ إنشاء التعديل والمعاينة
+        </button>
+
+        <div
+          id="builderStatus"
+          class="builder-status">
+        </div>
+
+      </div>
+
+
+      <div
+        id="builderPreviewBox"
+        class="builder-box"
+        style="display:none">
+
+        <h3>
+          👁 المعاينة
+        </h3>
+
+        <p class="builder-info">
+          هذه نسخة تجريبية معزولة.
+          لم نحفظها في GitHub بعد.
+        </p>
+
+        <iframe
+          id="builderPreviewFrame"
+          class="builder-preview"
+          sandbox="allow-scripts allow-forms">
+        </iframe>
+
+
+        <div class="builder-actions">
+
+          <button
+            class="btn btn-primary"
+            onclick="builderApplyChanges()">
+            ✅ تطبيق على GitHub
+          </button>
+
+          <button
+            class="btn btn-light"
+            onclick="builderCancelPreview()">
+            ❌ إلغاء
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="builder-box">
+
+        <h3>
+          💡 أمثلة
+        </h3>
+
+        <button
+          class="btn btn-light"
+          onclick="builderExample(
+            'أضف زر دارك مود فعلي في الهيدر واجعل اختيار المستخدم محفوظاً'
+          )">
+          🌙 إضافة Dark Mode
+        </button>
+
+        <button
+          class="btn btn-light"
+          onclick="builderExample(
+            'اعرض إعلانات لوحة الإدارة في الصفحة الرئيسية داخل سلايدر أفقي'
+          )">
+          📢 سلايدر الإعلانات
+        </button>
+
+        <button
+          class="btn btn-light"
+          onclick="builderExample(
+            'حسن تصميم الهيدر على الموبايل بدون تغيير وظائف الموقع'
+          )">
+          📱 تحسين الهيدر
+        </button>
+
+      </div>
+
+    `;
+
+
+    content.appendChild(page);
+  }
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function builderStatus(
+  message,
+  type = "ok"
+){
+
+  const box =
+    document.getElementById(
+      "builderStatus"
+    );
+
+  if(!box) return;
+
+  box.className =
+    "builder-status " + type;
+
+  box.textContent =
+    message;
+}
+
+
+/* =====================================================
+   EXAMPLE
+===================================================== */
+
+function builderExample(text){
+
+  const field =
+    document.getElementById(
+      "builderPrompt"
+    );
+
+  if(field){
+
+    field.value = text;
+
+    field.focus();
+  }
+}
+
+
+/* =====================================================
+   READ REAL ERROR FROM EDGE FUNCTION
+===================================================== */
+
+async function builderGetError(error){
+
+  let message =
+    error?.message ||
+    "حدث خطأ غير معروف";
+
+
+  try{
+
+    if(
+      error?.context &&
+      typeof error.context.json === "function"
+    ){
+
+      const details =
+        await error.context.json();
+
+      if(details?.error){
+
+        message =
+          details.error;
+      }
+    }
+
+  }catch(e){}
+
+
+  return message;
+}
+
+
+/* =====================================================
+   GENERATE PREVIEW
+===================================================== */
+
+async function builderGeneratePreview(){
+
+  const promptField =
+    document.getElementById(
+      "builderPrompt"
+    );
+
+
+  const prompt =
+    promptField?.value?.trim();
+
+
+  if(!prompt){
+
+    builderStatus(
+      "اكتب التعديل الذي تريده أولاً.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(
+    typeof currentProfile !== "undefined" &&
+    currentProfile &&
+    currentProfile.role !== "admin"
+  ){
+
+    builderStatus(
+      "هذه الميزة خاصة بالأدمن.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const button =
+    document.getElementById(
+      "builderGenerateBtn"
+    );
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "⏳ جاري قراءة GitHub وتعديل الموقع...";
+
+
+  builderStatus(
+    "الذكاء الاصطناعي يقرأ index.html ويجهز النسخة الجديدة...",
+    "ok"
+  );
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await db.functions.invoke(
+        "ai-site-builder",
+        {
+
+          body:{
+
+            action:
+              "preview",
+
+            prompt:
+              prompt
+
+          }
+
+        }
+      );
+
+
+    if(error){
+
+      throw error;
+    }
+
+
+    if(
+      !data ||
+      !data.success
+    ){
+
+      throw new Error(
+        data?.error ||
+        "لم يتم إنشاء المعاينة"
+      );
+    }
+
+
+    builderPendingHTML =
+      data.content;
+
+    builderPendingSHA =
+      data.sha;
+
+    builderPendingPrompt =
+      prompt;
+
+
+    const iframe =
+      document.getElementById(
+        "builderPreviewFrame"
+      );
+
+
+    iframe.srcdoc =
+      builderPendingHTML;
+
+
+    document
+      .getElementById(
+        "builderPreviewBox"
+      )
+      .style.display = "block";
+
+
+    builderStatus(
+      "✅ المعاينة جاهزة. افحص الموقع، وإذا عجبك اضغط تطبيق على GitHub.",
+      "ok"
+    );
+
+
+    document
+      .getElementById(
+        "builderPreviewBox"
+      )
+      .scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+
+
+  }catch(error){
+
+    console.error(error);
+
+
+    const message =
+      await builderGetError(error);
+
+
+    builderStatus(
+      "❌ " + message,
+      "error"
+    );
+
+  }finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "✨ إنشاء التعديل والمعاينة";
+
+  }
+}
+
+
+/* =====================================================
+   APPLY TO GITHUB
+===================================================== */
+
+async function builderApplyChanges(){
+
+  if(
+    !builderPendingHTML ||
+    !builderPendingSHA
+  ){
+
+    builderStatus(
+      "لا توجد معاينة جاهزة للتطبيق.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const yes =
+    confirm(
+      "راح يتم الآن تعديل index.html الحقيقي داخل GitHub. متأكد؟"
+    );
+
+
+  if(!yes){
+    return;
+  }
+
+
+  builderStatus(
+    "⏳ جاري حفظ النسخة الجديدة في GitHub...",
+    "ok"
+  );
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await db.functions.invoke(
+        "ai-site-builder",
+        {
+
+          body:{
+
+            action:
+              "apply",
+
+            prompt:
+              builderPendingPrompt,
+
+            content:
+              builderPendingHTML,
+
+            sha:
+              builderPendingSHA
+
+          }
+
+        }
+      );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    if(
+      !data ||
+      !data.success
+    ){
+
+      throw new Error(
+        data?.error ||
+        "فشل تحديث GitHub"
+      );
+    }
+
+
+    builderStatus(
+      "✅ تم تحديث index.html في GitHub بنجاح.",
+      "ok"
+    );
+
+
+    builderPendingHTML = "";
+    builderPendingSHA = "";
+    builderPendingPrompt = "";
+
+
+    document
+      .getElementById(
+        "builderPreviewBox"
+      )
+      .style.display = "none";
+
+
+    alert(
+      "✅ تم حفظ التعديل في GitHub بنجاح"
+    );
+
+
+  }catch(error){
+
+    console.error(error);
+
+
+    const message =
+      await builderGetError(error);
+
+
+    builderStatus(
+      "❌ " + message,
+      "error"
+    );
+
+  }
+}
+
+
+/* =====================================================
+   CANCEL
+===================================================== */
+
+function builderCancelPreview(){
+
+  builderPendingHTML = "";
+  builderPendingSHA = "";
+  builderPendingPrompt = "";
+
+
+  const iframe =
+    document.getElementById(
+      "builderPreviewFrame"
+    );
+
+
+  if(iframe){
+    iframe.srcdoc = "";
+  }
+
+
+  const box =
+    document.getElementById(
+      "builderPreviewBox"
+    );
+
+
+  if(box){
+    box.style.display = "none";
+  }
+
+
+  builderStatus(
+    "تم إلغاء التعديل. لم يتم تغيير GitHub.",
+    "ok"
+  );
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+createAISiteBuilder();
+
+</script>
 </body>
 </html>
