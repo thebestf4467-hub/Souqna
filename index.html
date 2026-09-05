@@ -171,6 +171,11 @@ button{cursor:pointer}
 .promotion-slide.has-image .promotion-content{padding:16px 22px}
 .promotion-slide h3{font-size:23px;margin-bottom:9px;color:var(--green)}
 .promotion-slide p{line-height:1.8}
+.promotion-slide.is-clickable{cursor:pointer;transition:transform .2s,box-shadow .2s}
+.promotion-slide.is-clickable:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.promotion-slide.is-clickable:focus{outline:3px solid rgba(8,127,79,.25);outline-offset:-3px}
+.public-destination-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.public-destination-products{margin-top:20px}
 .slider-controls{display:flex;gap:7px}
 .slider-control{
   width:40px;
@@ -496,6 +501,8 @@ button{cursor:pointer}
     <div id="homePromotions" class="promotions-slider"></div>
   </div>
 </section>
+
+<section id="publicDestination" class="section hidden" aria-live="polite"></section>
 
 <section class="section">
   <div class="section-head"><h2>الأقسام</h2></div>
@@ -1077,7 +1084,7 @@ function escapePublicText(value){
 }
 
 function readPromotionContent(value){
- const legacy={text:String(value||""),image:"",order:null};
+ const legacy={text:String(value||""),image:"",order:null,targetType:"",targetId:""};
  if(!value)return legacy;
 
  try{
@@ -1086,7 +1093,9 @@ function readPromotionContent(value){
      return {
        text:String(parsed.text||""),
        image:String(parsed.image||""),
-       order:Number.isFinite(Number(parsed.order))?Number(parsed.order):null
+       order:Number.isFinite(Number(parsed.order))?Number(parsed.order):null,
+       targetType:["store","category"].includes(parsed.targetType)?parsed.targetType:"",
+       targetId:String(parsed.targetId||"")
      };
    }
  }catch(error){}
@@ -1099,7 +1108,9 @@ function writePromotionContent(content){
    _souqnaAd:1,
    text:String(content.text||""),
    image:String(content.image||""),
-   order:Number.isFinite(Number(content.order))?Number(content.order):null
+   order:Number.isFinite(Number(content.order))?Number(content.order):null,
+   targetType:["store","category"].includes(content.targetType)?content.targetType:"",
+   targetId:String(content.targetId||"")
  });
 }
 
@@ -1144,8 +1155,10 @@ async function loadPublicPromotions(){
  promotionSliderIndex=0;
  slider.innerHTML=ordered.map(({item,content})=>{
    const image=safePromotionImage(content.image);
+   const clickable=content.targetType&&content.targetId;
    return `
- <article class="card promotion-slide ${image?"has-image":""}">
+ <article class="card promotion-slide ${image?"has-image":""} ${clickable?"is-clickable":""}"
+   ${clickable?`role="link" tabindex="0" data-target-type="${escapePublicText(content.targetType)}" data-target-id="${escapePublicText(content.targetId)}" onclick="openPromotionTarget(this.dataset.targetType,this.dataset.targetId)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openPromotionTarget(this.dataset.targetType,this.dataset.targetId)}"`:""}>
    ${image?`<img class="promotion-image" src="${image}" alt="${escapePublicText(item.title||"إعلان سوقنا")}">`:""}
    <div class="promotion-content">
      <h3>${escapePublicText(item.title)}</h3>
@@ -1157,6 +1170,81 @@ async function loadPublicPromotions(){
  slider.scrollLeft=0;
  section.classList.remove("hidden");
  startPromotionAutoplay();
+}
+
+function renderPromotionTargetProducts(products){
+ return products?.length?products.map(p=>`
+ <div class="card">
+   <div class="product-img">${p.image_url?`<img src="${escapePublicText(p.image_url)}" alt="${escapePublicText(p.name)}">`:"📦"}</div>
+   <div class="muted">${escapePublicText(p.stores?.name||"")}</div>
+   <h3>${escapePublicText(p.name)}</h3>
+   <div class="price">${money(p.price)}</div>
+ </div>`).join(""):`<div class="empty">لا توجد منتجات متاحة حالياً.</div>`;
+}
+
+async function openPromotionTarget(type,targetId){
+ if(!["store","category"].includes(type)||!targetId)return;
+
+ clearInterval(promotionSliderTimer);
+ const destination=document.getElementById("publicDestination");
+ [...document.getElementById("publicSite").children].forEach(el=>{
+   if(el.tagName==="SECTION"&&el!==destination)el.classList.add("hidden");
+ });
+ destination.classList.remove("hidden");
+ destination.innerHTML=`<div class="empty">جاري فتح الإعلان...</div>`;
+ window.scrollTo({top:0,behavior:"smooth"});
+
+ try{
+   if(type==="store"){
+     const [{data:store,error:storeError},{data:products,error:productsError}]=await Promise.all([
+       db.from("stores").select("*").eq("id",targetId).eq("status","active").single(),
+       db.from("products").select("*,stores(name)").eq("store_id",targetId).eq("is_active",true)
+     ]);
+     if(storeError)throw storeError;
+     if(productsError)throw productsError;
+     destination.innerHTML=`
+       <div class="public-destination-head">
+         <div><div class="muted">صفحة البائع</div><h2>${escapePublicText(store.name)}</h2></div>
+         <button class="btn btn-light" type="button" onclick="closePromotionTarget()">الرجوع للرئيسية</button>
+       </div>
+       <div class="card">
+         <p>${escapePublicText(store.description||"")}</p>
+         <p style="margin-top:9px">⭐ ${escapePublicText(store.rating||0)}</p>
+       </div>
+       <div class="public-destination-products"><div class="section-head"><h2>منتجات البائع</h2></div><div class="grid">${renderPromotionTargetProducts(products)}</div></div>`;
+   }else{
+     const [{data:category,error:categoryError},{data:products,error:productsError}]=await Promise.all([
+       db.from("categories").select("*").eq("id",targetId).eq("is_active",true).single(),
+       db.from("products").select("*,stores(name)").eq("category_id",targetId).eq("is_active",true)
+     ]);
+     if(categoryError)throw categoryError;
+     if(productsError)throw productsError;
+     destination.innerHTML=`
+       <div class="public-destination-head">
+         <div><div class="muted">صفحة القسم</div><h2>${escapePublicText(category.icon||"📦")} ${escapePublicText(category.name_ar)}</h2></div>
+         <button class="btn btn-light" type="button" onclick="closePromotionTarget()">الرجوع للرئيسية</button>
+       </div>
+       <div class="public-destination-products"><div class="section-head"><h2>منتجات القسم</h2></div><div class="grid">${renderPromotionTargetProducts(products)}</div></div>`;
+   }
+ }catch(error){
+   destination.innerHTML=`
+     <div class="public-destination-head"><h2>تعذر فتح الإعلان</h2><button class="btn btn-light" type="button" onclick="closePromotionTarget()">الرجوع للرئيسية</button></div>
+     <div class="empty">الوجهة غير متاحة حالياً.</div>`;
+ }
+}
+
+function closePromotionTarget(){
+ const destination=document.getElementById("publicDestination");
+ destination.classList.add("hidden");
+ destination.innerHTML="";
+ [...document.getElementById("publicSite").children].forEach(el=>{
+   if(el.tagName==="SECTION"&&el!==destination)el.classList.remove("hidden");
+ });
+ if(!document.getElementById("homePromotions").children.length){
+   document.getElementById("homePromotionsSection").classList.add("hidden");
+ }
+ startPromotionAutoplay();
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function scrollPromotionSlider(step,restart=true){
@@ -1757,7 +1845,7 @@ async function loadPromotions(){
    </div>
    ${x.is_active?badge("active"):badge("suspended")}
   </div>
-  <div class="muted">${x.placement} • الترتيب ${index+1}</div>
+  <div class="muted">${x.placement} • الترتيب ${index+1} • الوجهة: ${content.targetType==="store"?"بائع/متجر":content.targetType==="category"?"قسم":"غير محددة"}</div>
   <div class="row-actions">
    ${x.placement==="home"?`
    <button class="sm btn-light" onclick="movePromotion('${x.id}',-1)" aria-label="تحريك للأعلى">↑ للأعلى</button>
@@ -1770,7 +1858,23 @@ async function loadPromotions(){
  :`<div class="empty">لا توجد إعلانات.</div>`;
 }
 
-function openPromotionModal(){
+async function loadPromotionTargetOptions(selectId,type,targetId=""){
+ const select=document.getElementById(selectId);
+ if(!select)return;
+ select.innerHTML=`<option value="">جاري التحميل...</option>`;
+
+ const query=type==="category"
+   ?db.from("categories").select("id,name_ar").eq("is_active",true).order("sort_order")
+   :db.from("stores").select("id,name").eq("status","active").order("name");
+ const {data,error}=await query;
+ if(error){select.innerHTML=`<option value="">تعذر تحميل الوجهات</option>`;return}
+
+ select.innerHTML=`<option value="">اختر ${type==="category"?"القسم":"البائع أو المتجر"}</option>`+
+   (data||[]).map(item=>`<option value="${escapePublicText(item.id)}">${escapePublicText(type==="category"?item.name_ar:item.name)}</option>`).join("");
+ select.value=targetId||"";
+}
+
+async function openPromotionModal(){
  genericTitle.textContent="إضافة إعلان";
  genericBody.innerHTML=`
  <div class="form-group"><label>العنوان</label><input id="gPromoTitle" required></div>
@@ -1789,9 +1893,20 @@ function openPromotionModal(){
    <option value="featured_product">منتج مميز</option>
   </select>
  </div>
+ <div class="two">
+  <div class="form-group">
+   <label>نوع وجهة الإعلان</label>
+   <select id="gPromoTargetType" onchange="loadPromotionTargetOptions('gPromoTargetId',this.value)">
+    <option value="store">البائع / المتجر</option>
+    <option value="category">القسم</option>
+   </select>
+  </div>
+  <div class="form-group"><label>الوجهة عند النقر</label><select id="gPromoTargetId"></select></div>
+ </div>
  <button class="btn btn-primary btn-full" onclick="createPromotion()">حفظ</button>`;
 
  genericModal.classList.add("active");
+ await loadPromotionTargetOptions("gPromoTargetId","store");
 }
 
 function preparePromotionImage(file){
@@ -1841,7 +1956,9 @@ async function openEditPromotionModal(id){
    id:data.id,
    placement:data.placement,
    image,
-   order:content.order
+   order:content.order,
+   targetType:content.targetType||"store",
+   targetId:content.targetId||""
  };
 
  genericTitle.textContent="تعديل الإعلان";
@@ -1864,6 +1981,16 @@ async function openEditPromotionModal(id){
    <option value="featured_product">منتج مميز</option>
   </select>
  </div>
+ <div class="two">
+  <div class="form-group">
+   <label>نوع وجهة الإعلان</label>
+   <select id="gEditPromoTargetType" onchange="loadPromotionTargetOptions('gEditPromoTargetId',this.value)">
+    <option value="store">البائع / المتجر</option>
+    <option value="category">القسم</option>
+   </select>
+  </div>
+  <div class="form-group"><label>الوجهة عند النقر</label><select id="gEditPromoTargetId"></select></div>
+ </div>
  <div class="form-group">
   <label>الحالة</label>
   <select id="gEditPromoActive">
@@ -1877,7 +2004,9 @@ async function openEditPromotionModal(id){
  document.getElementById("gEditPromoDesc").value=content.text||"";
  document.getElementById("gEditPromoPlacement").value=data.placement||"home";
  document.getElementById("gEditPromoActive").value=String(Boolean(data.is_active));
+ document.getElementById("gEditPromoTargetType").value=editingPromotionData.targetType;
  genericModal.classList.add("active");
+ await loadPromotionTargetOptions("gEditPromoTargetId",editingPromotionData.targetType,editingPromotionData.targetId);
 }
 
 async function updatePromotion(){
@@ -1892,6 +2021,10 @@ async function updatePromotion(){
    const removeImage=document.getElementById("gEditPromoRemoveImage")?.checked;
    let image=removeImage?"":editingPromotionData.image;
    if(file)image=await preparePromotionImage(file);
+
+   const targetType=document.getElementById("gEditPromoTargetType").value;
+   const targetId=document.getElementById("gEditPromoTargetId").value;
+   if(!targetId){alert("اختر وجهة الإعلان");return}
 
    let order=editingPromotionData.order;
    if(placement!==editingPromotionData.placement){
@@ -1910,7 +2043,9 @@ async function updatePromotion(){
      description:writePromotionContent({
        text:document.getElementById("gEditPromoDesc").value.trim(),
        image,
-       order
+       order,
+       targetType,
+       targetId
      }),
      placement,
      is_active:document.getElementById("gEditPromoActive").value==="true"
@@ -1928,6 +2063,9 @@ async function updatePromotion(){
 async function createPromotion(){
  const title=gPromoTitle.value.trim();
  if(!title){alert("اكتب عنوان الإعلان");return}
+ const targetType=gPromoTargetType.value;
+ const targetId=gPromoTargetId.value;
+ if(!targetId){alert("اختر وجهة الإعلان");return}
 
  try{
    const image=await preparePromotionImage(gPromoImage.files[0]);
@@ -1945,7 +2083,9 @@ async function createPromotion(){
     description:writePromotionContent({
       text:gPromoDesc.value.trim(),
       image,
-      order:nextOrder
+      order:nextOrder,
+      targetType,
+      targetId
     }),
     placement:gPromoPlacement.value,
     is_active:true
