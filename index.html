@@ -1,0 +1,3097 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>سوقنا | Souqna</title>
+
+<style>
+:root{
+  --green:#087f4f;
+  --green2:#0b9660;
+  --dark:#101716;
+  --bg:#f5f7f6;
+  --card:#fff;
+  --text:#171a19;
+  --muted:#707875;
+  --border:#e3e8e5;
+  --danger:#d93025;
+  --warning:#c97900;
+  --blue:#2468d8;
+  --shadow:0 8px 28px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text)
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.container{width:min(1250px,94%);margin:auto}
+
+/* PUBLIC HEADER */
+.site-header{
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:500
+}
+.site-nav{
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  gap:14px
+}
+.logo{
+  font-size:27px;
+  font-weight:900;
+  color:var(--green);
+  white-space:nowrap
+}
+.search{flex:1}
+.search input{
+  width:100%;
+  height:45px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:0 15px;
+  outline:none;
+  background:#fafbfa
+}
+.actions{display:flex;gap:8px}
+.btn{
+  border:none;
+  border-radius:10px;
+  padding:11px 14px;
+  font-weight:800
+}
+.btn-primary{background:var(--green);color:#fff}
+.btn-light{background:#edf2ef;color:#111}
+.btn-danger{background:#ffe9e7;color:var(--danger)}
+.btn-warning{background:#fff2d8;color:#8c5700}
+.btn-blue{background:#e8f0ff;color:var(--blue)}
+.btn-dark{background:#151d1b;color:#fff}
+.btn-full{width:100%}
+
+/* PUBLIC */
+.hero{
+  margin-top:24px;
+  background:linear-gradient(135deg,#063d2b,var(--green2));
+  color:#fff;
+  border-radius:26px;
+  padding:46px
+}
+.hero h1{font-size:42px;margin-bottom:12px}
+.hero p{line-height:1.9;font-size:17px;opacity:.92}
+.status{
+  margin-top:18px;
+  padding:13px 15px;
+  border-radius:13px;
+  background:#fff;
+  border:1px solid var(--border)
+}
+.success{color:var(--green)}
+.error{color:var(--danger)}
+.section{margin-top:35px}
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:16px
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px
+}
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:17px
+}
+.category{text-align:center}
+.category-icon{font-size:34px;margin-bottom:8px}
+.muted{color:var(--muted)}
+.price{font-size:19px;font-weight:900;margin-top:8px}
+.product-img{
+  height:155px;
+  border-radius:13px;
+  background:#eef2f0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  margin-bottom:12px
+}
+.product-img img{width:100%;height:100%;object-fit:cover}
+
+/* ADMIN LAYOUT */
+.admin-app{
+  display:none;
+  min-height:100vh
+}
+.admin-app.active{display:flex}
+
+.sidebar{
+  width:260px;
+  background:var(--dark);
+  color:#fff;
+  height:100vh;
+  position:fixed;
+  top:0;
+  right:0;
+  z-index:1200;
+  padding:18px 13px;
+  overflow-y:auto
+}
+.admin-logo{
+  padding:12px;
+  font-size:23px;
+  font-weight:900;
+  border-bottom:1px solid #27302e;
+  margin-bottom:12px
+}
+.side-section{
+  color:#7f8d88;
+  font-size:11px;
+  margin:18px 10px 7px
+}
+.side-link{
+  width:100%;
+  border:0;
+  border-radius:10px;
+  padding:11px 12px;
+  background:transparent;
+  color:#d7dfdc;
+  text-align:right;
+  margin-bottom:4px
+}
+.side-link:hover,.side-link.active{
+  background:#1e2a27;
+  color:#fff
+}
+.side-bottom{margin-top:20px}
+
+.admin-main{
+  margin-right:260px;
+  width:calc(100% - 260px);
+  min-height:100vh
+}
+.admin-header{
+  height:70px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  position:sticky;
+  top:0;
+  z-index:800
+}
+.admin-title h2{font-size:21px}
+.admin-title p{font-size:12px;color:var(--muted);margin-top:3px}
+.menu-mobile{
+  display:none;
+  border:0;
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  background:#edf1ef;
+  font-size:20px
+}
+.admin-content{padding:22px}
+
+.view{display:none}
+.view.active{display:block}
+
+/* DASHBOARD */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px
+}
+.stat{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px
+}
+.stat span{color:var(--muted);font-size:13px}
+.stat strong{display:block;font-size:30px;margin-top:7px}
+.dashboard-cols{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:14px;
+  margin-top:15px
+}
+
+/* ADMIN SECTIONS */
+.toolbar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:14px
+}
+.toolbar input,.toolbar select{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  background:#fff
+}
+.toolbar input{flex:1;min-width:180px}
+
+.list{
+  display:flex;
+  flex-direction:column;
+  gap:9px
+}
+.row{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px
+}
+.row-main{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start
+}
+.row h3{font-size:16px}
+.row-actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:11px
+}
+.sm{
+  border:none;
+  padding:8px 9px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:800
+}
+.badge{
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  display:inline-block
+}
+.badge-green{background:#e2f5e9;color:#087f4f}
+.badge-yellow{background:#fff1d2;color:#8a5800}
+.badge-red{background:#ffe6e3;color:#be2d23}
+.badge-gray{background:#ecefed;color:#555}
+.badge-blue{background:#e8efff;color:#245fc4}
+
+.empty{
+  padding:30px;
+  text-align:center;
+  color:var(--muted);
+  background:#fff;
+  border:1px dashed #cdd4d0;
+  border-radius:14px
+}
+
+/* FORMS / MODALS */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:3000;
+  align-items:center;
+  justify-content:center;
+  padding:15px
+}
+.modal.active{display:flex}
+.modal-box{
+  width:min(560px,100%);
+  max-height:92vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:19px;
+  padding:20px
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:17px
+}
+.close{
+  border:0;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:#eee;
+  font-size:18px
+}
+.form-group{margin-bottom:13px}
+.form-group label{
+  display:block;
+  font-weight:800;
+  margin-bottom:6px
+}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:11px
+}
+.form-group textarea{min-height:80px}
+.two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+
+/* SETTINGS */
+.settings-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px
+}
+
+/* MOBILE */
+@media(max-width:950px){
+  .grid,.stats{grid-template-columns:repeat(2,1fr)}
+  .dashboard-cols{grid-template-columns:1fr}
+  .sidebar{
+    transform:translateX(100%);
+    transition:.25s
+  }
+  .sidebar.open{transform:translateX(0)}
+  .admin-main{
+    margin-right:0;
+    width:100%
+  }
+  .menu-mobile{display:block}
+}
+@media(max-width:600px){
+  .site-nav{flex-wrap:wrap;padding:10px 0}
+  .search{order:3;flex-basis:100%}
+  .hero{padding:30px 21px}
+  .hero h1{font-size:29px}
+  .grid,.stats{grid-template-columns:repeat(2,1fr)}
+  .settings-grid,.two{grid-template-columns:1fr}
+  .admin-content{padding:14px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= PUBLIC ================= -->
+
+<header id="siteHeader" class="site-header">
+<div class="container site-nav">
+  <div class="logo">سوقنا 🇮🇶</div>
+
+  <div class="search">
+    <input id="searchInput" placeholder="ابحث عن منتج...">
+  </div>
+
+  <div class="actions">
+    <button id="accountBtn" class="btn btn-light" onclick="accountAction()">دخول</button>
+    <button class="btn btn-primary" onclick="refreshPublicData()">تحديث</button>
+  </div>
+</div>
+</header>
+
+<main id="publicSite" class="container">
+
+<section class="hero">
+  <h1>كل السوق العراقي بمكان واحد</h1>
+  <p>
+    منصة عراقية تجمع المتاجر والمنتجات والطلبات والتوصيل في مكان واحد.
+  </p>
+</section>
+
+<div id="connectionStatus" class="status">
+  جاري الاتصال بقاعدة البيانات...
+</div>
+
+<section class="section">
+  <div class="section-head"><h2>الأقسام</h2></div>
+  <div id="categories" class="grid"></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>المتاجر</h2></div>
+  <div id="stores" class="grid"></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>المنتجات</h2></div>
+  <div id="products" class="grid"></div>
+</section>
+
+</main>
+
+<!-- ================= ADMIN ================= -->
+
+<div id="adminApp" class="admin-app">
+
+<aside id="sidebar" class="sidebar">
+
+  <div class="admin-logo">سوقنا • Admin</div>
+
+  <div class="side-section">الرئيسية</div>
+  <button class="side-link active" onclick="openView('dashboard',this)">📊 لوحة التحكم</button>
+
+  <div class="side-section">المستخدمون</div>
+  <button class="side-link" onclick="openView('customers',this)">👥 الزبائن</button>
+  <button class="side-link" onclick="openView('merchants',this)">🏪 التجار</button>
+  <button class="side-link" onclick="openView('drivers',this)">🚗 السائقون</button>
+
+  <div class="side-section">التجارة</div>
+  <button class="side-link" onclick="openView('storesAdmin',this)">🏬 المتاجر</button>
+  <button class="side-link" onclick="openView('productsAdmin',this)">📦 المنتجات</button>
+  <button class="side-link" onclick="openView('categoriesAdmin',this)">🗂 الأقسام</button>
+  <button class="side-link" onclick="openView('ordersAdmin',this)">🛒 الطلبات</button>
+
+  <div class="side-section">التوصيل والمال</div>
+  <button class="side-link" onclick="openView('deliveriesAdmin',this)">🛵 التوصيل</button>
+  <button class="side-link" onclick="openView('subscriptionsAdmin',this)">💳 الاشتراكات</button>
+  <button class="side-link" onclick="openView('withdrawalsAdmin',this)">💸 السحوبات</button>
+
+  <div class="side-section">التسويق</div>
+  <button class="side-link" onclick="openView('couponsAdmin',this)">🎟 الكوبونات</button>
+  <button class="side-link" onclick="openView('promotionsAdmin',this)">📣 الإعلانات والعروض</button>
+
+  <div class="side-section">الدعم</div>
+  <button class="side-link" onclick="openView('complaintsAdmin',this)">⚠️ الشكاوى</button>
+  <button class="side-link" onclick="openView('reviewsAdmin',this)">⭐ التقييمات</button>
+  <button class="side-link" onclick="openView('notificationsAdmin',this)">🔔 الإشعارات</button>
+
+  <div class="side-section">النظام</div>
+  <button class="side-link" onclick="openView('regionsAdmin',this)">📍 المناطق</button>
+  <button class="side-link" onclick="openView('logsAdmin',this)">🧾 سجل النشاط</button>
+  <button class="side-link" onclick="openView('settingsAdmin',this)">⚙️ الإعدادات</button>
+  <button class="side-link" onclick="openView('accountAdmin',this)">👤 حساب الأدمن</button>
+
+  <div class="side-bottom">
+    <button class="side-link" onclick="showPublicSite()">🏠 عرض الموقع</button>
+    <button class="side-link" onclick="logout()">🚪 تسجيل الخروج</button>
+  </div>
+
+</aside>
+
+<section class="admin-main">
+
+<header class="admin-header">
+  <button class="menu-mobile" onclick="toggleSidebar()">☰</button>
+
+  <div class="admin-title">
+    <h2 id="adminPageTitle">لوحة التحكم</h2>
+    <p>إدارة منصة سوقنا</p>
+  </div>
+
+  <button class="btn btn-light" onclick="showPublicSite()">الموقع</button>
+</header>
+
+<div class="admin-content">
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="view active">
+
+  <div class="stats">
+    <div class="stat"><span>المتاجر</span><strong id="statStores">0</strong></div>
+    <div class="stat"><span>المنتجات</span><strong id="statProducts">0</strong></div>
+    <div class="stat"><span>الطلبات</span><strong id="statOrders">0</strong></div>
+    <div class="stat"><span>المستخدمون</span><strong id="statUsers">0</strong></div>
+  </div>
+
+  <div class="dashboard-cols">
+
+    <div class="card">
+      <div class="section-head"><h3>أحدث الطلبات</h3></div>
+      <div id="recentOrders" class="list"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-head"><h3>حالة المنصة</h3></div>
+      <p class="muted">المتاجر المعلقة</p>
+      <h2 id="pendingStoresCount" style="margin:7px 0 17px">0</h2>
+
+      <p class="muted">الشكاوى المفتوحة</p>
+      <h2 id="openComplaintsCount" style="margin-top:7px">0</h2>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- CUSTOMERS -->
+<div id="customers" class="view">
+  <div class="section-head"><h2>الزبائن</h2></div>
+  <div class="toolbar">
+    <input placeholder="بحث..." oninput="filterRows('customersList',this.value)">
+  </div>
+  <div id="customersList" class="list"></div>
+</div>
+
+<!-- MERCHANTS -->
+<div id="merchants" class="view">
+  <div class="section-head"><h2>التجار</h2></div>
+  <div class="toolbar">
+    <input placeholder="بحث..." oninput="filterRows('merchantsList',this.value)">
+  </div>
+  <div id="merchantsList" class="list"></div>
+</div>
+
+<!-- DRIVERS -->
+<div id="drivers" class="view">
+  <div class="section-head"><h2>السائقون</h2></div>
+  <div id="driversList" class="list"></div>
+</div>
+
+<!-- STORES -->
+<div id="storesAdmin" class="view">
+  <div class="section-head">
+    <h2>المتاجر</h2>
+    <button class="btn btn-primary" onclick="openStoreModal()">+ متجر</button>
+  </div>
+  <div class="toolbar">
+    <input placeholder="بحث عن متجر..." oninput="filterRows('adminStoresList',this.value)">
+  </div>
+  <div id="adminStoresList" class="list"></div>
+</div>
+
+<!-- PRODUCTS -->
+<div id="productsAdmin" class="view">
+  <div class="section-head">
+    <h2>المنتجات</h2>
+    <button class="btn btn-primary" onclick="openProductModal()">+ منتج</button>
+  </div>
+  <div id="adminProductsList" class="list"></div>
+</div>
+
+<!-- CATEGORIES -->
+<div id="categoriesAdmin" class="view">
+  <div class="section-head">
+    <h2>الأقسام</h2>
+    <button class="btn btn-primary" onclick="openCategoryModal()">+ قسم</button>
+  </div>
+  <div id="adminCategoriesList" class="list"></div>
+</div>
+
+<!-- ORDERS -->
+<div id="ordersAdmin" class="view">
+  <div class="section-head"><h2>الطلبات</h2></div>
+  <div id="adminOrdersList" class="list"></div>
+</div>
+
+<!-- DELIVERIES -->
+<div id="deliveriesAdmin" class="view">
+  <div class="section-head"><h2>التوصيل</h2></div>
+  <div id="deliveriesList" class="list"></div>
+</div>
+
+<!-- SUBSCRIPTIONS -->
+<div id="subscriptionsAdmin" class="view">
+  <div class="section-head">
+    <h2>اشتراكات المتاجر</h2>
+    <button class="btn btn-primary" onclick="openSubscriptionModal()">+ اشتراك</button>
+  </div>
+  <div id="subscriptionsList" class="list"></div>
+</div>
+
+<!-- WITHDRAWALS -->
+<div id="withdrawalsAdmin" class="view">
+  <div class="section-head"><h2>طلبات السحب</h2></div>
+  <div id="withdrawalsList" class="list"></div>
+</div>
+
+<!-- COUPONS -->
+<div id="couponsAdmin" class="view">
+  <div class="section-head">
+    <h2>الكوبونات</h2>
+    <button class="btn btn-primary" onclick="openCouponModal()">+ كوبون</button>
+  </div>
+  <div id="couponsList" class="list"></div>
+</div>
+
+<!-- PROMOTIONS -->
+<div id="promotionsAdmin" class="view">
+  <div class="section-head">
+    <h2>الإعلانات والعروض</h2>
+    <button class="btn btn-primary" onclick="openPromotionModal()">+ إعلان</button>
+  </div>
+  <div id="promotionsList" class="list"></div>
+</div>
+
+<!-- COMPLAINTS -->
+<div id="complaintsAdmin" class="view">
+  <div class="section-head"><h2>الشكاوى</h2></div>
+  <div id="complaintsList" class="list"></div>
+</div>
+
+<!-- REVIEWS -->
+<div id="reviewsAdmin" class="view">
+  <div class="section-head"><h2>التقييمات</h2></div>
+  <div id="reviewsList" class="list"></div>
+</div>
+
+<!-- NOTIFICATIONS -->
+<div id="notificationsAdmin" class="view">
+  <div class="section-head">
+    <h2>الإشعارات</h2>
+    <button class="btn btn-primary" onclick="openNotificationModal()">+ إشعار</button>
+  </div>
+  <div id="notificationsList" class="list"></div>
+</div>
+
+<!-- REGIONS -->
+<div id="regionsAdmin" class="view">
+  <div class="section-head">
+    <h2>المحافظات والمناطق</h2>
+    <button class="btn btn-primary" onclick="openRegionModal()">+ منطقة</button>
+  </div>
+  <div id="regionsList" class="list"></div>
+</div>
+
+<!-- LOGS -->
+<div id="logsAdmin" class="view">
+  <div class="section-head"><h2>سجل نشاط الإدارة</h2></div>
+  <div id="logsList" class="list"></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settingsAdmin" class="view">
+
+  <div class="section-head"><h2>إعدادات المنصة</h2></div>
+
+  <div class="settings-grid">
+
+    <div class="card">
+
+      <h3 style="margin-bottom:15px">العمولات والتوصيل</h3>
+
+      <div class="form-group">
+        <label>عمولة المنصة %</label>
+        <input id="commissionPercent" type="number">
+      </div>
+
+      <div class="form-group">
+        <label>أجرة التوصيل الأساسية</label>
+        <input id="baseDeliveryFee" type="number">
+      </div>
+
+      <div class="form-group">
+        <label>رسوم متجر إضافي</label>
+        <input id="extraStoreFee" type="number">
+      </div>
+
+      <div class="form-group">
+        <label>سعر الكيلومتر</label>
+        <input id="pricePerKm" type="number">
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="savePlatformSettings()">
+        حفظ
+      </button>
+
+    </div>
+
+    <div class="card">
+
+      <h3 style="margin-bottom:15px">اشتراك التاجر</h3>
+
+      <div class="form-group">
+        <label>الاشتراك الشهري</label>
+        <input id="monthlySubscription" type="number">
+      </div>
+
+      <p class="muted">
+        تقدر لاحقاً نسوي أكثر من باقة: Basic / Pro / Premium.
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ADMIN ACCOUNT -->
+<div id="accountAdmin" class="view">
+
+  <div class="settings-grid">
+
+    <div class="card">
+      <h3 style="margin-bottom:15px">تغيير البريد</h3>
+
+      <div class="form-group">
+        <label>البريد الجديد</label>
+        <input id="adminNewEmail" type="email">
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="changeAdminEmail()">
+        تغيير البريد
+      </button>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:15px">تغيير كلمة المرور</h3>
+
+      <div class="form-group">
+        <label>كلمة المرور الجديدة</label>
+        <input id="adminNewPassword" type="password">
+      </div>
+
+      <div class="form-group">
+        <label>تأكيد كلمة المرور</label>
+        <input id="adminConfirmPassword" type="password">
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="changeAdminPassword()">
+        تغيير كلمة المرور
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+</section>
+</div>
+
+<!-- ================= LOGIN MODAL ================= -->
+
+<div id="loginModal" class="modal">
+<div class="modal-box">
+
+  <div class="modal-head">
+    <h2>تسجيل الدخول</h2>
+    <button class="close" onclick="closeModal('loginModal')">×</button>
+  </div>
+
+  <div class="form-group">
+    <input id="email" type="email" placeholder="البريد الإلكتروني">
+  </div>
+
+  <div class="form-group">
+    <input id="password" type="password" placeholder="كلمة المرور">
+  </div>
+
+  <button class="btn btn-primary btn-full" onclick="login()">دخول</button>
+
+  <div id="authStatus" class="status"></div>
+
+</div>
+</div>
+
+<!-- GENERIC MODAL -->
+<div id="genericModal" class="modal">
+<div class="modal-box">
+
+  <div class="modal-head">
+    <h2 id="genericTitle">إضافة</h2>
+    <button class="close" onclick="closeModal('genericModal')">×</button>
+  </div>
+
+  <div id="genericBody"></div>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL="https://rexihtkytzduonndzmsb.supabase.co";
+const SUPABASE_KEY="sb_publishable_zfypLzxFC8ya8lKj6i1r6w_trBc-n9X";
+
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+let currentProfile=null;
+
+const titles={
+ dashboard:"لوحة التحكم",
+ customers:"الزبائن",
+ merchants:"التجار",
+ drivers:"السائقون",
+ storesAdmin:"المتاجر",
+ productsAdmin:"المنتجات",
+ categoriesAdmin:"الأقسام",
+ ordersAdmin:"الطلبات",
+ deliveriesAdmin:"التوصيل",
+ subscriptionsAdmin:"الاشتراكات",
+ withdrawalsAdmin:"السحوبات",
+ couponsAdmin:"الكوبونات",
+ promotionsAdmin:"الإعلانات والعروض",
+ complaintsAdmin:"الشكاوى",
+ reviewsAdmin:"التقييمات",
+ notificationsAdmin:"الإشعارات",
+ regionsAdmin:"المناطق",
+ logsAdmin:"سجل النشاط",
+ settingsAdmin:"الإعدادات",
+ accountAdmin:"حساب الأدمن"
+};
+
+function money(v){
+ return new Intl.NumberFormat("en-US").format(Number(v||0))+" د.ع";
+}
+
+function closeModal(id){
+ document.getElementById(id).classList.remove("active");
+}
+
+function toggleSidebar(){
+ document.getElementById("sidebar").classList.toggle("open");
+}
+
+function openView(id,btn){
+ document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+
+ document.querySelectorAll(".side-link").forEach(b=>b.classList.remove("active"));
+ if(btn) btn.classList.add("active");
+
+ document.getElementById("adminPageTitle").textContent=titles[id]||"الإدارة";
+ document.getElementById("sidebar").classList.remove("open");
+}
+
+function filterRows(id,q){
+ q=q.toLowerCase();
+ [...document.getElementById(id).children].forEach(el=>{
+   el.style.display=el.textContent.toLowerCase().includes(q)?"":"none";
+ });
+}
+
+function badge(status){
+ const map={
+  active:"badge-green",
+  delivered:"badge-green",
+  approved:"badge-green",
+  paid:"badge-green",
+  resolved:"badge-green",
+  pending:"badge-yellow",
+  preparing:"badge-yellow",
+  open:"badge-yellow",
+  under_review:"badge-yellow",
+  suspended:"badge-gray",
+  offline:"badge-gray",
+  cancelled:"badge-red",
+  rejected:"badge-red"
+ };
+ return `<span class="badge ${map[status]||"badge-blue"}">${status||"-"}</span>`;
+}
+
+/* AUTH */
+
+async function checkUser(){
+ const {data:{user}}=await db.auth.getUser();
+
+ if(!user){
+   currentProfile=null;
+   document.getElementById("accountBtn").textContent="دخول";
+   return;
+ }
+
+ const {data}=await db.from("profiles").select("*").eq("id",user.id).single();
+
+ currentProfile=data;
+
+ if(data?.role==="admin")
+   document.getElementById("accountBtn").textContent="👑 Admin";
+ else
+   document.getElementById("accountBtn").textContent="حسابي";
+}
+
+function accountAction(){
+ if(currentProfile?.role==="admin") showAdmin();
+ else document.getElementById("loginModal").classList.add("active");
+}
+
+async function login(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+
+ const {error}=await db.auth.signInWithPassword({email,password});
+
+ if(error){
+   document.getElementById("authStatus").textContent="❌ "+error.message;
+   return;
+ }
+
+ await checkUser();
+ closeModal("loginModal");
+
+ if(currentProfile?.role==="admin") showAdmin();
+}
+
+async function logout(){
+ await db.auth.signOut();
+ currentProfile=null;
+ location.reload();
+}
+
+/* SITE */
+
+async function testConnection(){
+ const {error}=await db.from("categories").select("id").limit(1);
+ const x=document.getElementById("connectionStatus");
+
+ if(error){
+   x.className="status error";
+   x.textContent="❌ "+error.message;
+ }else{
+   x.className="status success";
+   x.textContent="✅ الموقع متصل بقاعدة بيانات Souqna";
+ }
+}
+
+async function loadPublicCategories(){
+ const {data}=await db.from("categories").select("*").eq("is_active",true).order("sort_order");
+
+ document.getElementById("categories").innerHTML=(data||[]).map(c=>`
+ <div class="card category">
+   <div class="category-icon">${c.icon||"📦"}</div>
+   <strong>${c.name_ar}</strong>
+ </div>`).join("");
+}
+
+async function loadPublicStores(){
+ const {data}=await db.from("stores").select("*").eq("status","active");
+
+ document.getElementById("stores").innerHTML=data?.length?
+ data.map(s=>`
+ <div class="card">
+   <h3>${s.name}</h3>
+   <p class="muted">${s.description||""}</p>
+   <p style="margin-top:9px">⭐ ${s.rating||0}</p>
+ </div>`).join("")
+ :`<div class="empty">لا توجد متاجر.</div>`;
+}
+
+async function loadPublicProducts(){
+ const {data}=await db.from("products").select("*,stores(name)").eq("is_active",true);
+
+ document.getElementById("products").innerHTML=data?.length?
+ data.map(p=>`
+ <div class="card">
+   <div class="product-img">
+   ${p.image_url?`<img src="${p.image_url}">`:"📦"}
+   </div>
+   <div class="muted">${p.stores?.name||""}</div>
+   <h3>${p.name}</h3>
+   <div class="price">${money(p.price)}</div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد منتجات.</div>`;
+}
+
+async function refreshPublicData(){
+ await Promise.all([
+  loadPublicCategories(),
+  loadPublicStores(),
+  loadPublicProducts()
+ ]);
+}
+
+document.getElementById("searchInput").addEventListener("input",async function(){
+ const q=this.value.trim();
+
+ if(!q){
+   loadPublicProducts();
+   return;
+ }
+
+ const {data}=await db.from("products")
+   .select("*,stores(name)")
+   .ilike("name",`%${q}%`)
+   .eq("is_active",true);
+
+ document.getElementById("products").innerHTML=(data||[]).map(p=>`
+ <div class="card">
+   <div class="product-img">${p.image_url?`<img src="${p.image_url}">`:"📦"}</div>
+   <div class="muted">${p.stores?.name||""}</div>
+   <h3>${p.name}</h3>
+   <div class="price">${money(p.price)}</div>
+ </div>`).join("");
+});
+
+/* ADMIN */
+
+function showAdmin(){
+ if(currentProfile?.role!=="admin"){
+   alert("غير مصرح");
+   return;
+ }
+
+ document.getElementById("siteHeader").classList.add("hidden");
+ document.getElementById("publicSite").classList.add("hidden");
+ document.getElementById("adminApp").classList.add("active");
+
+ loadAllAdmin();
+}
+
+function showPublicSite(){
+ document.getElementById("adminApp").classList.remove("active");
+ document.getElementById("siteHeader").classList.remove("hidden");
+ document.getElementById("publicSite").classList.remove("hidden");
+ refreshPublicData();
+}
+
+async function loadAllAdmin(){
+ await Promise.all([
+  loadDashboard(),
+  loadUsers(),
+  loadDrivers(),
+  loadStoresAdmin(),
+  loadProductsAdmin(),
+  loadCategoriesAdmin(),
+  loadOrders(),
+  loadDeliveries(),
+  loadSubscriptions(),
+  loadWithdrawals(),
+  loadCoupons(),
+  loadPromotions(),
+  loadComplaints(),
+  loadReviews(),
+  loadNotifications(),
+  loadRegions(),
+  loadLogs(),
+  loadSettings()
+ ]);
+}
+
+/* DASHBOARD */
+
+async function loadDashboard(){
+ const [s,p,o,u,ps,oc]=await Promise.all([
+  db.from("stores").select("*",{count:"exact",head:true}),
+  db.from("products").select("*",{count:"exact",head:true}),
+  db.from("orders").select("*",{count:"exact",head:true}),
+  db.from("profiles").select("*",{count:"exact",head:true}),
+  db.from("stores").select("*",{count:"exact",head:true}).eq("status","pending"),
+  db.from("complaints").select("*",{count:"exact",head:true}).eq("status","open")
+ ]);
+
+ statStores.textContent=s.count||0;
+ statProducts.textContent=p.count||0;
+ statOrders.textContent=o.count||0;
+ statUsers.textContent=u.count||0;
+ pendingStoresCount.textContent=ps.count||0;
+ openComplaintsCount.textContent=oc.count||0;
+
+ const {data}=await db.from("orders").select("*").order("created_at",{ascending:false}).limit(5);
+
+ recentOrders.innerHTML=data?.length?
+ data.map(x=>`
+ <div class="row">
+   <div class="row-main">
+     <b>طلب #${x.order_number}</b>
+     ${badge(x.status)}
+   </div>
+   <div class="muted">${money(x.total_amount)}</div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد طلبات.</div>`;
+}
+
+/* USERS */
+
+async function loadUsers(){
+ const {data}=await db.from("profiles").select("*").order("created_at",{ascending:false});
+
+ const customers=(data||[]).filter(x=>x.role==="customer");
+ const merchants=(data||[]).filter(x=>x.role==="merchant");
+
+ customersList.innerHTML=renderUsers(customers);
+ merchantsList.innerHTML=renderUsers(merchants);
+}
+
+function renderUsers(data){
+ return data.length?data.map(u=>`
+ <div class="row">
+   <div class="row-main">
+     <div>
+       <h3>${u.full_name||"بدون اسم"}</h3>
+       <div class="muted">${u.phone||""}</div>
+     </div>
+     ${badge(u.role)}
+   </div>
+
+   <div class="row-actions">
+     <button class="sm btn-blue" onclick="changeRole('${u.id}','merchant')">تاجر</button>
+     <button class="sm btn-warning" onclick="changeRole('${u.id}','driver')">سائق</button>
+     <button class="sm btn-light" onclick="changeRole('${u.id}','customer')">زبون</button>
+   </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد بيانات.</div>`;
+}
+
+async function changeRole(id,role){
+ const {error}=await db.from("profiles").update({role}).eq("id",id);
+ if(error){alert(error.message);return}
+ loadUsers();
+}
+
+/* DRIVERS */
+
+async function loadDrivers(){
+ const {data}=await db.from("drivers").select("*,profiles:id(full_name,phone)");
+
+ driversList.innerHTML=data?.length?data.map(d=>`
+ <div class="row">
+   <div class="row-main">
+     <div>
+       <h3>${d.profiles?.full_name||"سائق"}</h3>
+       <div class="muted">${d.vehicle_type||""} ${d.vehicle_plate||""}</div>
+     </div>
+     ${badge(d.status)}
+   </div>
+ </div>`).join("")
+ :`<div class="empty">لا يوجد سائقون مسجلون.</div>`;
+}
+
+/* STORES */
+
+async function loadStoresAdmin(){
+ const {data}=await db.from("stores").select("*,profiles:owner_id(full_name)").order("created_at",{ascending:false});
+
+ adminStoresList.innerHTML=data?.length?data.map(s=>`
+ <div class="row">
+   <div class="row-main">
+     <div>
+       <h3>${s.name}</h3>
+       <div class="muted">المالك: ${s.profiles?.full_name||"-"}</div>
+       <div class="muted">${s.governorate||""} ${s.city||""}</div>
+     </div>
+     ${badge(s.status)}
+   </div>
+
+   <div class="row-actions">
+     <button class="sm btn-primary" onclick="setStoreStatus('${s.id}','active')">تفعيل</button>
+     <button class="sm btn-warning" onclick="setStoreStatus('${s.id}','pending')">مراجعة</button>
+     <button class="sm btn-light" onclick="setStoreStatus('${s.id}','suspended')">إيقاف</button>
+     <button class="sm btn-danger" onclick="deleteStore('${s.id}')">حذف</button>
+   </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد متاجر.</div>`;
+}
+
+async function setStoreStatus(id,status){
+ const {error}=await db.from("stores").update({status}).eq("id",id);
+ if(error){alert(error.message);return}
+ loadStoresAdmin();
+ loadDashboard();
+}
+
+async function deleteStore(id){
+ if(!confirm("حذف المتجر نهائياً؟"))return;
+
+ const {error}=await db.from("stores").delete().eq("id",id);
+ if(error){alert(error.message);return}
+
+ loadStoresAdmin();
+ loadDashboard();
+ refreshPublicData();
+}
+
+function openStoreModal(){
+ genericTitle.textContent="إضافة متجر";
+ genericBody.innerHTML=`
+ <div class="form-group"><label>اسم المتجر</label><input id="gStoreName"></div>
+ <div class="form-group"><label>الوصف</label><textarea id="gStoreDesc"></textarea></div>
+ <div class="form-group"><label>Owner UUID</label><input id="gStoreOwner"></div>
+ <div class="form-group"><label>المحافظة</label><input id="gStoreGov"></div>
+ <button class="btn btn-primary btn-full" onclick="createStore()">حفظ</button>`;
+ genericModal.classList.add("active");
+}
+
+async function createStore(){
+ const payload={
+  name:gStoreName.value.trim(),
+  description:gStoreDesc.value.trim(),
+  owner_id:gStoreOwner.value.trim(),
+  governorate:gStoreGov.value.trim(),
+  status:"active"
+ };
+
+ const {error}=await db.from("stores").insert(payload);
+ if(error){alert(error.message);return}
+
+ closeModal("genericModal");
+ loadStoresAdmin();
+ loadDashboard();
+}
+
+/* PRODUCTS */
+
+async function loadProductsAdmin(){
+ const {data}=await db.from("products").select("*,stores(name)").order("created_at",{ascending:false});
+
+ adminProductsList.innerHTML=data?.length?data.map(p=>`
+ <div class="row">
+   <div class="row-main">
+     <div>
+       <h3>${p.name}</h3>
+       <div class="muted">${p.stores?.name||""}</div>
+     </div>
+     <strong>${money(p.price)}</strong>
+   </div>
+
+   <div class="muted">المخزون: ${p.stock_quantity}</div>
+
+   <div class="row-actions">
+     <button class="sm btn-danger" onclick="deleteProduct('${p.id}')">حذف</button>
+   </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد منتجات.</div>`;
+}
+
+async function deleteProduct(id){
+ if(!confirm("حذف المنتج؟"))return;
+ const {error}=await db.from("products").delete().eq("id",id);
+ if(error){alert(error.message);return}
+ loadProductsAdmin();
+ loadDashboard();
+ refreshPublicData();
+}
+
+async function openProductModal(){
+ const {data:stores}=await db.from("stores").select("id,name").eq("status","active");
+
+ genericTitle.textContent="إضافة منتج";
+ genericBody.innerHTML=`
+ <div class="form-group"><label>الاسم</label><input id="gProductName"></div>
+
+ <div class="form-group">
+ <label>المتجر</label>
+ <select id="gProductStore">
+ ${(stores||[]).map(s=>`<option value="${s.id}">${s.name}</option>`).join("")}
+ </select>
+ </div>
+
+ <div class="two">
+   <div class="form-group"><label>السعر</label><input id="gProductPrice" type="number"></div>
+   <div class="form-group"><label>الكمية</label><input id="gProductStock" type="number"></div>
+ </div>
+
+ <div class="form-group"><label>رابط الصورة</label><input id="gProductImage"></div>
+
+ <button class="btn btn-primary btn-full" onclick="createProduct()">حفظ</button>`;
+
+ genericModal.classList.add("active");
+}
+
+async function createProduct(){
+ const payload={
+  name:gProductName.value.trim(),
+  store_id:gProductStore.value,
+  price:Number(gProductPrice.value),
+  stock_quantity:Number(gProductStock.value||0),
+  image_url:gProductImage.value.trim()||null,
+  is_active:true
+ };
+
+ const {error}=await db.from("products").insert(payload);
+ if(error){alert(error.message);return}
+
+ closeModal("genericModal");
+ loadProductsAdmin();
+ loadDashboard();
+ refreshPublicData();
+}
+
+/* CATEGORIES */
+
+async function loadCategoriesAdmin(){
+ const {data}=await db.from("categories").select("*").order("sort_order");
+
+ adminCategoriesList.innerHTML=data?.map(c=>`
+ <div class="row">
+   <div class="row-main">
+     <h3>${c.icon||"📦"} ${c.name_ar}</h3>
+     <span class="muted">${c.slug}</span>
+   </div>
+   <div class="row-actions">
+     <button class="sm btn-danger" onclick="deleteCategory('${c.id}')">حذف</button>
+   </div>
+ </div>`).join("")||"";
+}
+
+function openCategoryModal(){
+ genericTitle.textContent="إضافة قسم";
+ genericBody.innerHTML=`
+ <div class="form-group"><label>الاسم</label><input id="gCatName"></div>
+ <div class="form-group"><label>Slug</label><input id="gCatSlug"></div>
+ <div class="form-group"><label>الأيقونة</label><input id="gCatIcon"></div>
+ <button class="btn btn-primary btn-full" onclick="createCategory()">حفظ</button>`;
+ genericModal.classList.add("active");
+}
+
+async function createCategory(){
+ const {error}=await db.from("categories").insert({
+  name_ar:gCatName.value.trim(),
+  slug:gCatSlug.value.trim(),
+  icon:gCatIcon.value.trim(),
+  is_active:true
+ });
+ if(error){alert(error.message);return}
+ closeModal("genericModal");
+ loadCategoriesAdmin();
+ refreshPublicData();
+}
+
+async function deleteCategory(id){
+ if(!confirm("حذف القسم؟"))return;
+ const {error}=await db.from("categories").delete().eq("id",id);
+ if(error){alert(error.message);return}
+ loadCategoriesAdmin();
+ refreshPublicData();
+}
+
+/* ORDERS */
+
+async function loadOrders(){
+ const {data}=await db.from("orders").select("*").order("created_at",{ascending:false});
+
+ adminOrdersList.innerHTML=data?.length?data.map(o=>`
+ <div class="row">
+  <div class="row-main">
+    <div>
+      <h3>طلب #${o.order_number}</h3>
+      <div class="muted">${new Date(o.created_at).toLocaleString("ar-IQ")}</div>
+    </div>
+    ${badge(o.status)}
+  </div>
+  <div style="margin-top:7px"><strong>${money(o.total_amount)}</strong></div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد طلبات.</div>`;
+}
+
+/* DELIVERIES */
+
+async function loadDeliveries(){
+ const {data}=await db.from("deliveries").select("*").order("created_at",{ascending:false});
+
+ deliveriesList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+   <div class="row-main">
+     <b>Delivery</b>
+     ${badge(x.status)}
+   </div>
+   <div class="muted">
+     ${x.distance_km||0} كم • ${money(x.delivery_fee)}
+   </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد عمليات توصيل.</div>`;
+}
+
+/* SUBSCRIPTIONS */
+
+async function loadSubscriptions(){
+ const {data}=await db.from("store_subscriptions").select("*,stores(name)").order("created_at",{ascending:false});
+
+ subscriptionsList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+   <div class="row-main">
+     <div>
+       <h3>${x.stores?.name||"متجر"}</h3>
+       <div class="muted">${x.plan_name}</div>
+     </div>
+     ${badge(x.status)}
+   </div>
+   <div>${money(x.amount)}</div>
+   <div class="row-actions">
+     <button class="sm btn-danger" onclick="deleteSubscription('${x.id}')">حذف</button>
+   </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد اشتراكات.</div>`;
+}
+
+async function openSubscriptionModal(){
+ const {data}=await db.from("stores").select("id,name");
+
+ genericTitle.textContent="إضافة اشتراك";
+ genericBody.innerHTML=`
+ <div class="form-group">
+  <label>المتجر</label>
+  <select id="gSubStore">
+  ${(data||[]).map(s=>`<option value="${s.id}">${s.name}</option>`).join("")}
+  </select>
+ </div>
+
+ <div class="form-group"><label>الباقة</label><input id="gSubPlan" value="basic"></div>
+ <div class="form-group"><label>المبلغ</label><input id="gSubAmount" type="number"></div>
+
+ <button class="btn btn-primary btn-full" onclick="createSubscription()">حفظ</button>`;
+
+ genericModal.classList.add("active");
+}
+
+async function createSubscription(){
+ const {error}=await db.from("store_subscriptions").insert({
+  store_id:gSubStore.value,
+  plan_name:gSubPlan.value,
+  amount:Number(gSubAmount.value),
+  status:"active"
+ });
+
+ if(error){alert(error.message);return}
+ closeModal("genericModal");
+ loadSubscriptions();
+}
+
+async function deleteSubscription(id){
+ if(!confirm("حذف الاشتراك؟"))return;
+ await db.from("store_subscriptions").delete().eq("id",id);
+ loadSubscriptions();
+}
+
+/* WITHDRAWALS */
+
+async function loadWithdrawals(){
+ const {data}=await db.from("withdrawals").select("*,stores(name)").order("requested_at",{ascending:false});
+
+ withdrawalsList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+   <div class="row-main">
+     <div>
+       <h3>${x.stores?.name||"طلب سحب"}</h3>
+       <strong>${money(x.amount)}</strong>
+     </div>
+     ${badge(x.status)}
+   </div>
+
+   <div class="row-actions">
+     <button class="sm btn-primary" onclick="updateWithdrawal('${x.id}','approved')">قبول</button>
+     <button class="sm btn-dark" onclick="updateWithdrawal('${x.id}','paid')">تم الدفع</button>
+     <button class="sm btn-danger" onclick="updateWithdrawal('${x.id}','rejected')">رفض</button>
+   </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد طلبات سحب.</div>`;
+}
+
+async function updateWithdrawal(id,status){
+ const {error}=await db.from("withdrawals").update({
+  status,
+  processed_at:new Date().toISOString()
+ }).eq("id",id);
+
+ if(error){alert(error.message);return}
+ loadWithdrawals();
+}
+
+/* COUPONS */
+
+async function loadCoupons(){
+ const {data}=await db.from("coupons").select("*").order("created_at",{ascending:false});
+
+ couponsList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+   <div class="row-main">
+     <div>
+       <h3>${x.code}</h3>
+       <div class="muted">${x.title||""}</div>
+     </div>
+     ${x.is_active?badge("active"):badge("suspended")}
+   </div>
+
+   <div>${x.discount_value}${x.discount_type==="percent"?"%":" د.ع"}</div>
+
+   <div class="row-actions">
+     <button class="sm btn-danger" onclick="deleteCoupon('${x.id}')">حذف</button>
+   </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد كوبونات.</div>`;
+}
+
+function openCouponModal(){
+ genericTitle.textContent="إضافة كوبون";
+ genericBody.innerHTML=`
+ <div class="form-group"><label>الكود</label><input id="gCouponCode"></div>
+ <div class="form-group"><label>العنوان</label><input id="gCouponTitle"></div>
+
+ <div class="two">
+  <div class="form-group">
+   <label>النوع</label>
+   <select id="gCouponType">
+    <option value="fixed">مبلغ</option>
+    <option value="percent">نسبة</option>
+   </select>
+  </div>
+
+  <div class="form-group"><label>القيمة</label><input id="gCouponValue" type="number"></div>
+ </div>
+
+ <button class="btn btn-primary btn-full" onclick="createCoupon()">حفظ</button>`;
+
+ genericModal.classList.add("active");
+}
+
+async function createCoupon(){
+ const {error}=await db.from("coupons").insert({
+  code:gCouponCode.value.trim().toUpperCase(),
+  title:gCouponTitle.value.trim(),
+  discount_type:gCouponType.value,
+  discount_value:Number(gCouponValue.value),
+  is_active:true
+ });
+
+ if(error){alert(error.message);return}
+ closeModal("genericModal");
+ loadCoupons();
+}
+
+async function deleteCoupon(id){
+ if(!confirm("حذف الكوبون؟"))return;
+ await db.from("coupons").delete().eq("id",id);
+ loadCoupons();
+}
+
+/* PROMOTIONS */
+
+async function loadPromotions(){
+ const {data}=await db.from("promotions").select("*").order("created_at",{ascending:false});
+
+ promotionsList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+  <div class="row-main">
+   <h3>${x.title}</h3>
+   ${x.is_active?badge("active"):badge("suspended")}
+  </div>
+  <div class="muted">${x.placement}</div>
+  <div class="row-actions">
+   <button class="sm btn-danger" onclick="deletePromotion('${x.id}')">حذف</button>
+  </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد إعلانات.</div>`;
+}
+
+function openPromotionModal(){
+ genericTitle.textContent="إضافة إعلان";
+ genericBody.innerHTML=`
+ <div class="form-group"><label>العنوان</label><input id="gPromoTitle"></div>
+ <div class="form-group"><label>الوصف</label><textarea id="gPromoDesc"></textarea></div>
+ <div class="form-group">
+  <label>المكان</label>
+  <select id="gPromoPlacement">
+   <option value="home">الرئيسية</option>
+   <option value="category">القسم</option>
+   <option value="featured_store">متجر مميز</option>
+   <option value="featured_product">منتج مميز</option>
+  </select>
+ </div>
+ <button class="btn btn-primary btn-full" onclick="createPromotion()">حفظ</button>`;
+
+ genericModal.classList.add("active");
+}
+
+async function createPromotion(){
+ const {error}=await db.from("promotions").insert({
+  title:gPromoTitle.value.trim(),
+  description:gPromoDesc.value.trim(),
+  placement:gPromoPlacement.value,
+  is_active:true
+ });
+
+ if(error){alert(error.message);return}
+ closeModal("genericModal");
+ loadPromotions();
+}
+
+async function deletePromotion(id){
+ if(!confirm("حذف الإعلان؟"))return;
+ await db.from("promotions").delete().eq("id",id);
+ loadPromotions();
+}
+
+/* COMPLAINTS */
+
+async function loadComplaints(){
+ const {data}=await db.from("complaints").select("*").order("created_at",{ascending:false});
+
+ complaintsList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+  <div class="row-main">
+   <div>
+    <h3>${x.subject}</h3>
+    <div class="muted">${x.description||""}</div>
+   </div>
+   ${badge(x.status)}
+  </div>
+  <div class="row-actions">
+   <button class="sm btn-warning" onclick="setComplaint('${x.id}','under_review')">مراجعة</button>
+   <button class="sm btn-primary" onclick="setComplaint('${x.id}','resolved')">حل</button>
+   <button class="sm btn-danger" onclick="setComplaint('${x.id}','rejected')">رفض</button>
+  </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد شكاوى.</div>`;
+}
+
+async function setComplaint(id,status){
+ await db.from("complaints").update({
+  status,
+  resolved_at:status==="resolved"?new Date().toISOString():null
+ }).eq("id",id);
+
+ loadComplaints();
+ loadDashboard();
+}
+
+/* REVIEWS */
+
+async function loadReviews(){
+ const {data}=await db.from("reviews").select("*").order("created_at",{ascending:false});
+
+ reviewsList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+  <div class="row-main">
+   <div>
+    <h3>${"⭐".repeat(x.rating)}</h3>
+    <div class="muted">${x.comment||""}</div>
+   </div>
+  </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد تقييمات.</div>`;
+}
+
+/* NOTIFICATIONS */
+
+async function loadNotifications(){
+ const {data}=await db.from("notifications").select("*").order("created_at",{ascending:false}).limit(50);
+
+ notificationsList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+  <h3>${x.title}</h3>
+  <div class="muted">${x.body}</div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد إشعارات.</div>`;
+}
+
+function openNotificationModal(){
+ genericTitle.textContent="إرسال إشعار";
+ genericBody.innerHTML=`
+ <div class="form-group"><label>User UUID</label><input id="gNotifyUser"></div>
+ <div class="form-group"><label>العنوان</label><input id="gNotifyTitle"></div>
+ <div class="form-group"><label>النص</label><textarea id="gNotifyBody"></textarea></div>
+ <button class="btn btn-primary btn-full" onclick="createNotification()">إرسال</button>`;
+
+ genericModal.classList.add("active");
+}
+
+async function createNotification(){
+ const {error}=await db.from("notifications").insert({
+  user_id:gNotifyUser.value.trim(),
+  title:gNotifyTitle.value.trim(),
+  body:gNotifyBody.value.trim()
+ });
+
+ if(error){alert(error.message);return}
+ closeModal("genericModal");
+ loadNotifications();
+}
+
+/* REGIONS */
+
+async function loadRegions(){
+ const {data}=await db.from("regions").select("*").order("governorate");
+
+ regionsList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+  <div class="row-main">
+   <div>
+    <h3>${x.governorate}</h3>
+    <div class="muted">${x.city||""} ${x.area||""}</div>
+   </div>
+   ${x.delivery_enabled?badge("active"):badge("suspended")}
+  </div>
+
+  <div class="row-actions">
+   <button class="sm btn-light" onclick="toggleRegion('${x.id}',${x.delivery_enabled})">
+   ${x.delivery_enabled?"إيقاف التوصيل":"تفعيل التوصيل"}
+   </button>
+   <button class="sm btn-danger" onclick="deleteRegion('${x.id}')">حذف</button>
+  </div>
+ </div>`).join("")
+ :`<div class="empty">لا توجد مناطق.</div>`;
+}
+
+function openRegionModal(){
+ genericTitle.textContent="إضافة منطقة";
+ genericBody.innerHTML=`
+ <div class="form-group"><label>المحافظة</label><input id="gRegionGov"></div>
+ <div class="form-group"><label>المدينة</label><input id="gRegionCity"></div>
+ <div class="form-group"><label>المنطقة</label><input id="gRegionArea"></div>
+ <button class="btn btn-primary btn-full" onclick="createRegion()">حفظ</button>`;
+
+ genericModal.classList.add("active");
+}
+
+async function createRegion(){
+ const {error}=await db.from("regions").insert({
+  governorate:gRegionGov.value.trim(),
+  city:gRegionCity.value.trim(),
+  area:gRegionArea.value.trim(),
+  delivery_enabled:true
+ });
+
+ if(error){alert(error.message);return}
+ closeModal("genericModal");
+ loadRegions();
+}
+
+async function toggleRegion(id,current){
+ await db.from("regions").update({delivery_enabled:!current}).eq("id",id);
+ loadRegions();
+}
+
+async function deleteRegion(id){
+ if(!confirm("حذف المنطقة؟"))return;
+ await db.from("regions").delete().eq("id",id);
+ loadRegions();
+}
+
+/* LOGS */
+
+async function loadLogs(){
+ const {data}=await db.from("admin_activity_logs").select("*").order("created_at",{ascending:false}).limit(100);
+
+ logsList.innerHTML=data?.length?data.map(x=>`
+ <div class="row">
+  <div class="row-main">
+   <b>${x.action}</b>
+   <span class="muted">${new Date(x.created_at).toLocaleString("ar-IQ")}</span>
+  </div>
+  <div class="muted">${x.description||""}</div>
+ </div>`).join("")
+ :`<div class="empty">لا يوجد سجل بعد.</div>`;
+}
+
+/* SETTINGS */
+
+async function loadSettings(){
+ const {data}=await db.from("platform_settings").select("*").eq("id",1).single();
+
+ if(!data)return;
+
+ commissionPercent.value=data.platform_commission_percent;
+ baseDeliveryFee.value=data.base_delivery_fee;
+ extraStoreFee.value=data.extra_store_fee;
+ pricePerKm.value=data.price_per_km;
+ monthlySubscription.value=data.monthly_store_subscription;
+}
+
+async function savePlatformSettings(){
+ const {error}=await db.from("platform_settings").update({
+  platform_commission_percent:Number(commissionPercent.value),
+  base_delivery_fee:Number(baseDeliveryFee.value),
+  extra_store_fee:Number(extraStoreFee.value),
+  price_per_km:Number(pricePerKm.value),
+  monthly_store_subscription:Number(monthlySubscription.value)
+ }).eq("id",1);
+
+ if(error){alert(error.message);return}
+ alert("✅ تم حفظ الإعدادات");
+}
+
+/* ADMIN ACCOUNT */
+
+async function changeAdminEmail(){
+ const email=adminNewEmail.value.trim();
+
+ if(!email){
+   alert("اكتب البريد الجديد");
+   return;
+ }
+
+ const {error}=await db.auth.updateUser({email});
+
+ if(error){alert(error.message);return}
+
+ alert("✅ تم طلب تغيير البريد. قد يطلب Supabase تأكيد البريد الجديد.");
+}
+
+async function changeAdminPassword(){
+ const p1=adminNewPassword.value;
+ const p2=adminConfirmPassword.value;
+
+ if(p1.length<8){
+   alert("الباسورد لازم 8 أحرف على الأقل");
+   return;
+ }
+
+ if(p1!==p2){
+   alert("كلمتا المرور غير متطابقتين");
+   return;
+ }
+
+ const {error}=await db.auth.updateUser({password:p1});
+
+ if(error){alert(error.message);return}
+
+ adminNewPassword.value="";
+ adminConfirmPassword.value="";
+
+ alert("✅ تم تغيير كلمة المرور");
+}
+
+/* START */
+
+async function start(){
+ await testConnection();
+ await checkUser();
+ await refreshPublicData();
+}
+
+start();
+</script>
+<!-- =====================================================
+     SOUQNA AI DESIGNER
+====================================================== -->
+<script>
+let aiCurrentSettings = null;
+let aiPendingChanges = null;
+let aiPendingRequestId = null;
+let aiPreviewBase = null;
+
+const AI_ALLOWED_FIELDS = [
+  "primary_color",
+  "secondary_color",
+  "background_color",
+  "text_color",
+  "border_radius",
+  "card_spacing",
+  "container_width",
+  "header_style",
+  "card_style",
+  "button_style",
+  "hero_title",
+  "hero_subtitle",
+  "custom_css"
+];
+
+/* =========================
+   CREATE AI DESIGNER UI
+========================= */
+
+function aiCreateInterface(){
+
+  /* زر داخل القائمة الجانبية */
+  const sidebar = document.getElementById("sidebar");
+
+  if(sidebar && !document.getElementById("aiDesignerButton")){
+
+    const btn = document.createElement("button");
+
+    btn.id = "aiDesignerButton";
+    btn.className = "side-link";
+
+    btn.innerHTML = "🤖 مصمم الموقع AI";
+
+    btn.onclick = function(){
+
+      openView("aiDesignerAdmin", btn);
+
+      const title =
+        document.getElementById("adminPageTitle");
+
+      if(title){
+        title.textContent = "🤖 مصمم الموقع بالذكاء الاصطناعي";
+      }
+
+      aiLoadCurrentSettings();
+    };
+
+    const bottom =
+      sidebar.querySelector(".side-bottom");
+
+    if(bottom){
+      sidebar.insertBefore(btn, bottom);
+    }else{
+      sidebar.appendChild(btn);
+    }
+  }
+
+
+  /* صفحة AI */
+  const content =
+    document.querySelector(".admin-content");
+
+  if(content &&
+     !document.getElementById("aiDesignerAdmin")){
+
+    const view = document.createElement("div");
+
+    view.id = "aiDesignerAdmin";
+    view.className = "view";
+
+    view.innerHTML = `
+
+      <div class="section-head">
+        <div>
+          <h2>🤖 مصمم سوقنا AI</h2>
+          <p class="muted" style="margin-top:6px">
+            اكتب التعديل الذي تريده على تصميم الموقع.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+
+        <div class="form-group">
+          <label>شنو تريد تغيّر؟</label>
+
+          <textarea
+            id="aiDesignPrompt"
+            style="min-height:130px"
+            placeholder="مثلاً:
+خلي تصميم الموقع أفخم،
+استعمل أخضر غامق،
+صغر تدوير البطاقات،
+وغير عنوان الصفحة الرئيسية."
+          ></textarea>
+        </div>
+
+        <button
+          id="aiGenerateBtn"
+          class="btn btn-primary btn-full"
+          onclick="aiGenerateDesign()">
+          ✨ إنشاء اقتراح
+        </button>
+
+        <div
+          id="aiDesignerStatus"
+          class="status"
+          style="display:none">
+        </div>
+
+      </div>
+
+
+      <div
+        id="aiProposalBox"
+        class="card"
+        style="display:none;margin-top:15px">
+
+        <h3>التعديل المقترح</h3>
+
+        <p
+          id="aiProposalSummary"
+          style="margin:12px 0;line-height:1.8">
+        </p>
+
+        <div
+          id="aiChangesList"
+          style="margin-top:12px">
+        </div>
+
+        <div
+          style="
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:8px;
+          margin-top:18px;
+          ">
+
+          <button
+            class="btn btn-light"
+            onclick="aiPreviewDesign()">
+            👁 معاينة
+          </button>
+
+          <button
+            class="btn btn-primary"
+            onclick="aiApplyDesign()">
+            ✅ تطبيق
+          </button>
+
+          <button
+            class="btn btn-light"
+            onclick="aiCancelPreview()">
+            ↩ إلغاء المعاينة
+          </button>
+
+          <button
+            class="btn btn-danger"
+            onclick="aiRejectDesign()">
+            ✕ رفض
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="card"
+        style="margin-top:15px">
+
+        <div class="section-head">
+          <div>
+            <h3>النسخ الاحتياطية</h3>
+            <p class="muted">
+              إذا ما عجبك آخر تعديل رجعه بضغطة.
+            </p>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-warning btn-full"
+          onclick="aiUndoLastDesign()">
+          ↩ التراجع عن آخر تعديل
+        </button>
+
+      </div>
+
+
+      <div
+        class="card"
+        style="margin-top:15px">
+
+        <h3>أمثلة أوامر</h3>
+
+        <div
+          style="
+          display:flex;
+          flex-wrap:wrap;
+          gap:7px;
+          margin-top:12px;
+          ">
+
+          <button
+            class="btn btn-light"
+            onclick="aiExample('خلي تصميم الموقع أفخم وأكثر احترافية')">
+            تصميم أفخم
+          </button>
+
+          <button
+            class="btn btn-light"
+            onclick="aiExample('خلي اللون الرئيسي أخضر غامق')">
+            أخضر غامق
+          </button>
+
+          <button
+            class="btn btn-light"
+            onclick="aiExample('خلي البطاقات أقل تدويراً وأكثر بساطة')">
+            بطاقات بسيطة
+          </button>
+
+          <button
+            class="btn btn-light"
+            onclick="aiExample('غير عنوان الصفحة الرئيسية إلى سوق العراق كله بين إيديك')">
+            تغيير العنوان
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    content.appendChild(view);
+  }
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function aiStatus(message, type="normal"){
+
+  const box =
+    document.getElementById("aiDesignerStatus");
+
+  if(!box) return;
+
+  box.style.display = "block";
+  box.textContent = message;
+
+  box.className = "status";
+
+  if(type === "error"){
+    box.classList.add("error");
+  }
+
+  if(type === "success"){
+    box.classList.add("success");
+  }
+}
+
+
+function aiExample(text){
+
+  const textarea =
+    document.getElementById("aiDesignPrompt");
+
+  if(textarea){
+    textarea.value = text;
+  }
+}
+
+
+function aiSanitizeChanges(changes){
+
+  const clean = {};
+
+  if(!changes ||
+     typeof changes !== "object"){
+    return clean;
+  }
+
+  AI_ALLOWED_FIELDS.forEach(key => {
+
+    if(
+      Object.prototype.hasOwnProperty
+      .call(changes,key)
+    ){
+      clean[key] = changes[key];
+    }
+
+  });
+
+  if(clean.custom_css){
+
+    const dangerous =
+      /@import|url\s*\(|javascript:|expression\s*\(/i;
+
+    if(dangerous.test(clean.custom_css)){
+      clean.custom_css = "";
+    }
+  }
+
+  return clean;
+}
+
+
+/* =========================
+   LOAD CURRENT DESIGN
+========================= */
+
+async function aiLoadCurrentSettings(){
+
+  const {data,error} =
+    await db
+      .from("site_design_settings")
+      .select("*")
+      .eq("id",1)
+      .single();
+
+  if(error){
+
+    console.error(error);
+
+    aiStatus(
+      "❌ تعذر قراءة إعدادات التصميم: " +
+      error.message,
+      "error"
+    );
+
+    return null;
+  }
+
+  aiCurrentSettings = data;
+
+  return data;
+}
+
+
+/* =========================
+   APPLY SETTINGS TO PAGE
+========================= */
+
+function aiApplySettingsToPage(settings){
+
+  if(!settings) return;
+
+  const root =
+    document.documentElement;
+
+  if(settings.primary_color){
+    root.style.setProperty(
+      "--green",
+      settings.primary_color
+    );
+  }
+
+  if(settings.secondary_color){
+    root.style.setProperty(
+      "--green2",
+      settings.secondary_color
+    );
+  }
+
+  if(settings.background_color){
+    root.style.setProperty(
+      "--bg",
+      settings.background_color
+    );
+
+    document.body.style.backgroundColor =
+      settings.background_color;
+  }
+
+  if(settings.text_color){
+    root.style.setProperty(
+      "--text",
+      settings.text_color
+    );
+  }
+
+
+  /* تدوير الزوايا */
+
+  if(settings.border_radius !== undefined){
+
+    document
+      .querySelectorAll(
+        ".card,.row,.stat,.hero,.modal-box"
+      )
+      .forEach(el => {
+
+        el.style.borderRadius =
+          Number(settings.border_radius) + "px";
+
+      });
+  }
+
+
+  /* المسافات */
+
+  if(settings.card_spacing !== undefined){
+
+    document
+      .querySelectorAll(".grid,.stats")
+      .forEach(el => {
+
+        el.style.gap =
+          Number(settings.card_spacing) + "px";
+
+      });
+  }
+
+
+  /* عرض الموقع */
+
+  if(settings.container_width){
+
+    document
+      .querySelectorAll(".container")
+      .forEach(el => {
+
+        el.style.maxWidth =
+          Number(settings.container_width) + "px";
+
+      });
+  }
+
+
+  /* الهيدر */
+
+  const header =
+    document.getElementById("siteHeader");
+
+  if(header){
+
+    if(settings.header_style === "dark"){
+
+      header.style.background = "#101716";
+      header.style.color = "#ffffff";
+
+    }else{
+
+      header.style.background = "#ffffff";
+      header.style.color = "";
+
+    }
+  }
+
+
+  /* شكل البطاقات */
+
+  document
+    .querySelectorAll(".card,.row,.stat")
+    .forEach(el => {
+
+      if(settings.card_style === "flat"){
+
+        el.style.boxShadow = "none";
+
+      }
+
+      else if(settings.card_style === "shadow"){
+
+        el.style.boxShadow =
+          "0 10px 30px rgba(0,0,0,.08)";
+
+      }
+
+      else if(settings.card_style === "borderless"){
+
+        el.style.border = "none";
+
+      }
+
+    });
+
+
+  /* شكل الأزرار */
+
+  document
+    .querySelectorAll(".btn,.sm,.side-link")
+    .forEach(btn => {
+
+      if(settings.button_style === "pill"){
+        btn.style.borderRadius = "999px";
+      }
+
+      else if(settings.button_style === "square"){
+        btn.style.borderRadius = "3px";
+      }
+
+      else{
+        btn.style.borderRadius = "10px";
+      }
+
+    });
+
+
+  /* Hero */
+
+  const heroTitle =
+    document.querySelector(".hero h1");
+
+  const heroSubtitle =
+    document.querySelector(".hero p");
+
+  if(
+    heroTitle &&
+    settings.hero_title
+  ){
+    heroTitle.textContent =
+      settings.hero_title;
+  }
+
+  if(
+    heroSubtitle &&
+    settings.hero_subtitle
+  ){
+    heroSubtitle.textContent =
+      settings.hero_subtitle;
+  }
+
+
+  /* CSS مخصص آمن */
+
+  let style =
+    document.getElementById("souqnaAiCss");
+
+  if(!style){
+
+    style =
+      document.createElement("style");
+
+    style.id = "souqnaAiCss";
+
+    document.head.appendChild(style);
+  }
+
+  const css =
+    String(settings.custom_css || "");
+
+  if(
+    !/@import|url\s*\(|javascript:|expression\s*\(/i
+    .test(css)
+  ){
+    style.textContent = css;
+  }
+}
+
+
+/* =========================
+   ASK AI
+========================= */
+
+async function aiGenerateDesign(){
+
+  if(
+    !currentProfile ||
+    currentProfile.role !== "admin"
+  ){
+    aiStatus(
+      "❌ هذه الميزة للأدمن فقط.",
+      "error"
+    );
+
+    return;
+  }
+
+  const prompt =
+    document
+      .getElementById("aiDesignPrompt")
+      .value
+      .trim();
+
+  if(!prompt){
+
+    aiStatus(
+      "اكتب التعديل الذي تريده أولاً.",
+      "error"
+    );
+
+    return;
+  }
+
+  if(!aiCurrentSettings){
+    await aiLoadCurrentSettings();
+  }
+
+  const button =
+    document.getElementById("aiGenerateBtn");
+
+  button.disabled = true;
+  button.textContent = "⏳ الذكاء الاصطناعي يفكر...";
+
+  aiStatus(
+    "جاري إنشاء اقتراح التصميم..."
+  );
+
+  try{
+
+    const {data,error} =
+      await db.functions.invoke(
+        "ai-design",
+        {
+          body:{
+            prompt:prompt,
+            currentSettings:
+              aiCurrentSettings || {}
+          }
+        }
+      );
+
+    if(error){
+      throw error;
+    }
+
+    if(!data || data.error){
+
+      throw new Error(
+        data?.error || "لم يتم استلام نتيجة"
+      );
+    }
+
+    aiPendingRequestId =
+      data.request_id;
+
+    aiPendingChanges =
+      aiSanitizeChanges(
+        data.result?.changes || {}
+      );
+
+    const summary =
+      data.result?.summary ||
+      "تم إنشاء اقتراح جديد.";
+
+    document
+      .getElementById("aiProposalSummary")
+      .textContent = summary;
+
+
+    const labels = {
+
+      primary_color:"اللون الرئيسي",
+      secondary_color:"اللون الثانوي",
+      background_color:"الخلفية",
+      text_color:"لون النص",
+      border_radius:"تدوير الزوايا",
+      card_spacing:"المسافة بين البطاقات",
+      container_width:"عرض الموقع",
+      header_style:"شكل الهيدر",
+      card_style:"شكل البطاقات",
+      button_style:"شكل الأزرار",
+      hero_title:"عنوان الصفحة",
+      hero_subtitle:"الوصف الرئيسي",
+      custom_css:"CSS إضافي"
+
+    };
+
+
+    const list =
+      Object.entries(aiPendingChanges)
+      .map(([key,value]) => `
+
+        <div
+          style="
+          padding:11px 0;
+          border-bottom:1px solid #eee;
+          ">
+
+          <strong>
+            ${labels[key] || key}
+          </strong>
+
+          <div
+            class="muted"
+            style="
+            margin-top:4px;
+            word-break:break-word;
+            ">
+            ${String(value)}
+          </div>
+
+        </div>
+
+      `)
+      .join("");
+
+
+    document
+      .getElementById("aiChangesList")
+      .innerHTML =
+      list ||
+      "<div class='muted'>لا توجد تغييرات.</div>";
+
+
+    document
+      .getElementById("aiProposalBox")
+      .style.display = "block";
+
+
+    aiStatus(
+      "✅ الاقتراح جاهز. جرب المعاينة أولاً.",
+      "success"
+    );
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    aiStatus(
+      "❌ " +
+      (
+        error?.message ||
+        "حدث خطأ أثناء الاتصال بالذكاء الاصطناعي"
+      ),
+      "error"
+    );
+
+  }
+  finally{
+
+    button.disabled = false;
+    button.textContent = "✨ إنشاء اقتراح";
+
+  }
+}
+
+
+/* =========================
+   PREVIEW
+========================= */
+
+function aiPreviewDesign(){
+
+  if(!aiPendingChanges) return;
+
+  aiPreviewBase = {
+    ...aiCurrentSettings
+  };
+
+  aiApplySettingsToPage({
+    ...aiCurrentSettings,
+    ...aiPendingChanges
+  });
+
+  aiStatus(
+    "👁 هذه معاينة فقط. لم نحفظ التعديل بعد.",
+    "success"
+  );
+
+  showPublicSite();
+}
+
+
+function aiCancelPreview(){
+
+  if(aiPreviewBase){
+
+    aiApplySettingsToPage(
+      aiPreviewBase
+    );
+
+  }
+
+  aiStatus(
+    "↩ تم إلغاء المعاينة."
+  );
+}
+
+
+/* =========================
+   APPLY DESIGN
+========================= */
+
+async function aiApplyDesign(){
+
+  if(!aiPendingChanges) return;
+
+  if(
+    !confirm(
+      "هل تريد تطبيق هذا التصميم فعلياً؟"
+    )
+  ){
+    return;
+  }
+
+
+  if(!aiCurrentSettings){
+    await aiLoadCurrentSettings();
+  }
+
+
+  /* حفظ النسخة السابقة */
+
+  const {error:versionError} =
+    await db
+      .from("site_design_versions")
+      .insert({
+
+        changed_by:
+          currentProfile.id,
+
+        source_request_id:
+          aiPendingRequestId || null,
+
+        settings_snapshot:
+          aiCurrentSettings
+
+      });
+
+
+  if(versionError){
+
+    aiStatus(
+      "❌ تعذر إنشاء نسخة احتياطية: " +
+      versionError.message,
+      "error"
+    );
+
+    return;
+  }
+
+
+  const changes =
+    aiSanitizeChanges(
+      aiPendingChanges
+    );
+
+
+  const {data,error} =
+    await db
+      .from("site_design_settings")
+      .update({
+        ...changes,
+        updated_at:
+          new Date().toISOString()
+      })
+      .eq("id",1)
+      .select()
+      .single();
+
+
+  if(error){
+
+    aiStatus(
+      "❌ لم يتم تطبيق التصميم: " +
+      error.message,
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(aiPendingRequestId){
+
+    await db
+      .from("ai_design_requests")
+      .update({
+        status:"applied",
+        applied_at:
+          new Date().toISOString()
+      })
+      .eq(
+        "id",
+        aiPendingRequestId
+      );
+
+  }
+
+
+  aiCurrentSettings = data;
+
+  aiApplySettingsToPage(data);
+
+  aiPreviewBase = null;
+  aiPendingChanges = null;
+  aiPendingRequestId = null;
+
+  document
+    .getElementById("aiProposalBox")
+    .style.display = "none";
+
+
+  aiStatus(
+    "✅ تم تطبيق التصميم وحفظه في Supabase.",
+    "success"
+  );
+}
+
+
+/* =========================
+   REJECT
+========================= */
+
+async function aiRejectDesign(){
+
+  if(aiPreviewBase){
+    aiApplySettingsToPage(aiPreviewBase);
+  }
+
+
+  if(aiPendingRequestId){
+
+    await db
+      .from("ai_design_requests")
+      .update({
+        status:"rejected"
+      })
+      .eq(
+        "id",
+        aiPendingRequestId
+      );
+
+  }
+
+
+  aiPendingChanges = null;
+  aiPendingRequestId = null;
+  aiPreviewBase = null;
+
+  document
+    .getElementById("aiProposalBox")
+    .style.display = "none";
+
+
+  aiStatus(
+    "تم رفض الاقتراح."
+  );
+}
+
+
+/* =========================
+   UNDO
+========================= */
+
+async function aiUndoLastDesign(){
+
+  if(
+    !confirm(
+      "ترجع التصميم إلى النسخة السابقة؟"
+    )
+  ){
+    return;
+  }
+
+
+  const {data,error} =
+    await db
+      .from("site_design_versions")
+      .select("*")
+      .order(
+        "version_number",
+        {ascending:false}
+      )
+      .limit(1);
+
+
+  if(error){
+
+    aiStatus(
+      "❌ " + error.message,
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(!data || !data.length){
+
+    aiStatus(
+      "ماكو نسخة سابقة للرجوع إلها.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const version = data[0];
+
+  const snapshot =
+    aiSanitizeChanges(
+      version.settings_snapshot
+    );
+
+
+  const {data:restored,error:restoreError} =
+    await db
+      .from("site_design_settings")
+      .update({
+        ...snapshot,
+        updated_at:
+          new Date().toISOString()
+      })
+      .eq("id",1)
+      .select()
+      .single();
+
+
+  if(restoreError){
+
+    aiStatus(
+      "❌ " + restoreError.message,
+      "error"
+    );
+
+    return;
+  }
+
+
+  await db
+    .from("site_design_versions")
+    .delete()
+    .eq("id",version.id);
+
+
+  aiCurrentSettings =
+    restored;
+
+  aiApplySettingsToPage(
+    restored
+  );
+
+
+  aiStatus(
+    "✅ رجعنا للتصميم السابق.",
+    "success"
+  );
+}
+
+
+/* =========================
+   LOAD DESIGN ON SITE START
+========================= */
+
+async function aiInitialLoad(){
+
+  aiCreateInterface();
+
+  const settings =
+    await aiLoadCurrentSettings();
+
+  if(settings){
+    aiApplySettingsToPage(settings);
+  }
+}
+
+
+aiInitialLoad();
+
+</script>
+<script>
+/* ===== SOUQNA REAL DARK MODE COMPONENT ===== */
+
+function souqnaDarkModeComponent(enabled){
+
+  let style = document.getElementById("souqnaDarkModeCSS");
+
+  if(!style){
+    style = document.createElement("style");
+    style.id = "souqnaDarkModeCSS";
+
+    style.textContent = `
+      html[data-theme="dark"] body{
+        background:#121816 !important;
+        color:#f1f5f3 !important;
+      }
+
+      html[data-theme="dark"] .site-header,
+      html[data-theme="dark"] .card,
+      html[data-theme="dark"] .row,
+      html[data-theme="dark"] .stat,
+      html[data-theme="dark"] .modal-box,
+      html[data-theme="dark"] .admin-header{
+        background:#1b2421 !important;
+        color:#f1f5f3 !important;
+        border-color:#34413d !important;
+      }
+
+      html[data-theme="dark"] input,
+      html[data-theme="dark"] textarea,
+      html[data-theme="dark"] select,
+      html[data-theme="dark"] .search input{
+        background:#111715 !important;
+        color:#ffffff !important;
+        border-color:#34413d !important;
+      }
+
+      html[data-theme="dark"] .muted{
+        color:#aeb8b4 !important;
+      }
+
+      html[data-theme="dark"] .btn-light{
+        background:#293431 !important;
+        color:#ffffff !important;
+      }
+
+      html[data-theme="dark"] #publicSite{
+        color:#f1f5f3;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+
+  const actions =
+    document.querySelector("#siteHeader .actions");
+
+  if(!actions) return;
+
+
+  let button =
+    document.getElementById("souqnaThemeToggle");
+
+
+  if(!enabled){
+
+    if(button){
+      button.remove();
+    }
+
+    return;
+  }
+
+
+  if(!button){
+
+    button = document.createElement("button");
+
+    button.id = "souqnaThemeToggle";
+    button.className = "btn btn-light";
+    button.type = "button";
+
+    button.onclick = function(){
+
+      const html =
+        document.documentElement;
+
+      const dark =
+        html.getAttribute("data-theme") !== "dark";
+
+      if(dark){
+
+        html.setAttribute(
+          "data-theme",
+          "dark"
+        );
+
+        localStorage.setItem(
+          "souqna_theme",
+          "dark"
+        );
+
+      }else{
+
+        html.removeAttribute(
+          "data-theme"
+        );
+
+        localStorage.setItem(
+          "souqna_theme",
+          "light"
+        );
+
+      }
+
+      souqnaUpdateThemeButton();
+    };
+
+    actions.prepend(button);
+  }
+
+
+  const savedTheme =
+    localStorage.getItem("souqna_theme");
+
+  if(savedTheme === "dark"){
+
+    document.documentElement
+      .setAttribute(
+        "data-theme",
+        "dark"
+      );
+  }
+
+  souqnaUpdateThemeButton();
+}
+
+
+function souqnaUpdateThemeButton(){
+
+  const button =
+    document.getElementById(
+      "souqnaThemeToggle"
+    );
+
+  if(!button) return;
+
+  const dark =
+    document.documentElement
+      .getAttribute("data-theme") === "dark";
+
+  button.innerHTML =
+    dark ? "☀️" : "🌙";
+}
+
+
+/* نخلي AI يقدر يشغل الميزة */
+
+const originalAiApplySettings =
+  aiApplySettingsToPage;
+
+aiApplySettingsToPage =
+function(settings){
+
+  originalAiApplySettings(settings);
+
+  const mode =
+    settings?.header_style || "";
+
+  const enableDarkToggle =
+    mode === "light_with_dark_mode_toggle" ||
+    mode === "dark_mode_toggle" ||
+    mode === "with_dark_mode_toggle";
+
+  souqnaDarkModeComponent(
+    enableDarkToggle
+  );
+};
+
+</script>
+</body>
+</html>
