@@ -1762,6 +1762,7 @@ async function loadPromotions(){
    ${x.placement==="home"?`
    <button class="sm btn-light" onclick="movePromotion('${x.id}',-1)" aria-label="تحريك للأعلى">↑ للأعلى</button>
    <button class="sm btn-light" onclick="movePromotion('${x.id}',1)" aria-label="تحريك للأسفل">↓ للأسفل</button>`:""}
+   <button class="sm btn-blue" onclick="openEditPromotionModal('${x.id}')">تعديل</button>
    <button class="sm btn-danger" onclick="deletePromotion('${x.id}')">حذف</button>
   </div>
  </div>`;
@@ -1826,6 +1827,102 @@ function preparePromotionImage(file){
    };
    image.src=objectUrl;
  });
+}
+
+let editingPromotionData=null;
+
+async function openEditPromotionModal(id){
+ const {data,error}=await db.from("promotions").select("*").eq("id",id).single();
+ if(error){alert(error.message);return}
+
+ const content=readPromotionContent(data.description);
+ const image=safePromotionImage(content.image);
+ editingPromotionData={
+   id:data.id,
+   placement:data.placement,
+   image,
+   order:content.order
+ };
+
+ genericTitle.textContent="تعديل الإعلان";
+ genericBody.innerHTML=`
+ <div class="form-group"><label>العنوان</label><input id="gEditPromoTitle" required></div>
+ <div class="form-group"><label>الوصف</label><textarea id="gEditPromoDesc"></textarea></div>
+ <div class="form-group">
+  <label>صورة الإعلان</label>
+  ${image?`<img class="promotion-admin-preview" src="${image}" alt="الصورة الحالية" style="display:block;margin:0 0 9px">`:""}
+  <input id="gEditPromoImage" type="file" accept="image/jpeg,image/png,image/webp">
+  <div class="muted" style="margin-top:6px">اترك الحقل فارغاً للاحتفاظ بالصورة الحالية.</div>
+  ${image?`<label style="margin-top:9px;font-weight:400"><input id="gEditPromoRemoveImage" type="checkbox" style="width:auto;margin-left:6px">حذف الصورة الحالية</label>`:""}
+ </div>
+ <div class="form-group">
+  <label>المكان</label>
+  <select id="gEditPromoPlacement">
+   <option value="home">الرئيسية</option>
+   <option value="category">القسم</option>
+   <option value="featured_store">متجر مميز</option>
+   <option value="featured_product">منتج مميز</option>
+  </select>
+ </div>
+ <div class="form-group">
+  <label>الحالة</label>
+  <select id="gEditPromoActive">
+   <option value="true">نشط</option>
+   <option value="false">متوقف</option>
+  </select>
+ </div>
+ <button class="btn btn-primary btn-full" onclick="updatePromotion()">حفظ التعديلات</button>`;
+
+ document.getElementById("gEditPromoTitle").value=data.title||"";
+ document.getElementById("gEditPromoDesc").value=content.text||"";
+ document.getElementById("gEditPromoPlacement").value=data.placement||"home";
+ document.getElementById("gEditPromoActive").value=String(Boolean(data.is_active));
+ genericModal.classList.add("active");
+}
+
+async function updatePromotion(){
+ if(!editingPromotionData)return;
+
+ const title=document.getElementById("gEditPromoTitle").value.trim();
+ if(!title){alert("اكتب عنوان الإعلان");return}
+
+ try{
+   const placement=document.getElementById("gEditPromoPlacement").value;
+   const file=document.getElementById("gEditPromoImage").files[0];
+   const removeImage=document.getElementById("gEditPromoRemoveImage")?.checked;
+   let image=removeImage?"":editingPromotionData.image;
+   if(file)image=await preparePromotionImage(file);
+
+   let order=editingPromotionData.order;
+   if(placement!==editingPromotionData.placement){
+     const {data:existing,error:readError}=await db.from("promotions")
+       .select("description")
+       .eq("placement",placement);
+     if(readError)throw readError;
+
+     const orders=(existing||[]).map(x=>readPromotionContent(x.description).order)
+       .filter(x=>Number.isFinite(x));
+     order=orders.length?Math.max(...orders)+1:1;
+   }
+
+   const {error}=await db.from("promotions").update({
+     title,
+     description:writePromotionContent({
+       text:document.getElementById("gEditPromoDesc").value.trim(),
+       image,
+       order
+     }),
+     placement,
+     is_active:document.getElementById("gEditPromoActive").value==="true"
+   }).eq("id",editingPromotionData.id);
+
+   if(error)throw error;
+   editingPromotionData=null;
+   closeModal("genericModal");
+   await Promise.all([loadPromotions(),loadPublicPromotions()]);
+ }catch(error){
+   alert(error.message||"تعذر تعديل الإعلان");
+ }
 }
 
 async function createPromotion(){
