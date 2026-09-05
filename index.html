@@ -605,6 +605,39 @@ body{
   .actions .btn{flex:1;padding-inline:8px}
   .hero-actions{grid-template-columns:1fr}
 }
+
+/* LOGIN / SIGN UP */
+.auth-switch{
+  margin-top:12px;
+  text-align:center
+}
+.auth-switch button{
+  border:0;
+  background:transparent;
+  color:var(--green);
+  font-weight:900;
+  padding:8px;
+  text-decoration:underline;
+  text-underline-offset:4px
+}
+.auth-note{
+  margin:-3px 0 13px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7
+}
+.auth-form .status:empty{display:none}
+.auth-form input{direction:rtl}
+.auth-form input[type="email"],
+.auth-form input[type="tel"]{direction:ltr;text-align:right}
+@media(max-width:600px){
+  #loginModal{align-items:flex-start;padding-top:max(15px,env(safe-area-inset-top))}
+  #loginModal .modal-box{
+    max-height:calc(100dvh - 30px - env(safe-area-inset-top));
+    padding-bottom:max(20px,env(safe-area-inset-bottom))
+  }
+  .auth-form input{font-size:16px;min-height:46px}
+}
 </style>
 </head>
 
@@ -1027,21 +1060,64 @@ body{
 <div class="modal-box">
 
   <div class="modal-head">
-    <h2>تسجيل الدخول</h2>
-    <button class="close" onclick="closeModal('loginModal')">×</button>
+    <h2 id="authModalTitle">تسجيل الدخول</h2>
+    <button class="close" type="button" onclick="closeModal('loginModal')" aria-label="إغلاق">×</button>
   </div>
 
-  <div class="form-group">
-    <input id="email" type="email" placeholder="البريد الإلكتروني">
-  </div>
+  <form id="loginForm" class="auth-form" onsubmit="event.preventDefault();login()">
+    <div class="form-group">
+      <input id="email" type="email" placeholder="البريد الإلكتروني" autocomplete="email" required>
+    </div>
 
-  <div class="form-group">
-    <input id="password" type="password" placeholder="كلمة المرور">
-  </div>
+    <div class="form-group">
+      <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" required>
+    </div>
 
-  <button class="btn btn-primary btn-full" onclick="login()">دخول</button>
+    <button class="btn btn-primary btn-full" type="submit">دخول</button>
 
-  <div id="authStatus" class="status"></div>
+    <div class="auth-switch">
+      <button type="button" onclick="showSignupForm()">إنشاء حساب جديد</button>
+    </div>
+
+    <div id="authStatus" class="status" role="status" aria-live="polite"></div>
+  </form>
+
+  <form id="signupForm" class="auth-form hidden" onsubmit="event.preventDefault();signup()">
+    <div class="form-group">
+      <label for="signupFullName">الاسم الكامل</label>
+      <input id="signupFullName" type="text" placeholder="الاسم الكامل" autocomplete="name" minlength="3" required>
+    </div>
+
+    <div class="form-group">
+      <label for="signupPhone">رقم الهاتف العراقي</label>
+      <input id="signupPhone" type="tel" inputmode="tel" placeholder="07XXXXXXXXX" autocomplete="tel" required>
+    </div>
+
+    <div class="form-group">
+      <label for="signupEmail">البريد الإلكتروني</label>
+      <input id="signupEmail" type="email" placeholder="name@example.com" autocomplete="email" required>
+    </div>
+
+    <div class="form-group">
+      <label for="signupPassword">كلمة المرور</label>
+      <input id="signupPassword" type="password" placeholder="8 أحرف على الأقل" autocomplete="new-password" minlength="8" required>
+    </div>
+
+    <div class="form-group">
+      <label for="signupConfirmPassword">تأكيد كلمة المرور</label>
+      <input id="signupConfirmPassword" type="password" placeholder="أعد كتابة كلمة المرور" autocomplete="new-password" minlength="8" required>
+    </div>
+
+    <p class="auth-note">سيتم إنشاء الحساب بصلاحية زبون فقط.</p>
+
+    <button id="signupSubmitBtn" class="btn btn-primary btn-full" type="submit">إنشاء الحساب</button>
+
+    <div class="auth-switch">
+      <button type="button" onclick="showLoginForm()">لدي حساب بالفعل - تسجيل الدخول</button>
+    </div>
+
+    <div id="signupStatus" class="status" role="status" aria-live="polite"></div>
+  </form>
 
 </div>
 </div>
@@ -1165,17 +1241,42 @@ async function checkUser(){
 
 function accountAction(){
  if(currentProfile?.role==="admin") showAdmin();
- else document.getElementById("loginModal").classList.add("active");
+ else{
+   showLoginForm();
+   document.getElementById("loginModal").classList.add("active");
+ }
+}
+
+function showLoginForm(){
+ document.getElementById("authModalTitle").textContent="تسجيل الدخول";
+ document.getElementById("signupForm").classList.add("hidden");
+ document.getElementById("loginForm").classList.remove("hidden");
+ document.getElementById("authStatus").textContent="";
+ document.getElementById("signupStatus").textContent="";
+}
+
+function showSignupForm(){
+ document.getElementById("authModalTitle").textContent="إنشاء حساب جديد";
+ document.getElementById("loginForm").classList.add("hidden");
+ document.getElementById("signupForm").classList.remove("hidden");
+ document.getElementById("authStatus").textContent="";
+ document.getElementById("signupStatus").textContent="";
+ document.getElementById("signupFullName").focus();
 }
 
 async function login(){
  const email=document.getElementById("email").value.trim();
  const password=document.getElementById("password").value;
+ const status=document.getElementById("authStatus");
+
+ status.className="status";
+ status.textContent="";
 
  const {error}=await db.auth.signInWithPassword({email,password});
 
  if(error){
-   document.getElementById("authStatus").textContent="❌ "+error.message;
+   status.className="status error";
+   status.textContent="❌ "+error.message;
    return;
  }
 
@@ -1183,6 +1284,87 @@ async function login(){
  closeModal("loginModal");
 
  if(currentProfile?.role==="admin") showAdmin();
+}
+
+async function signup(){
+ const fullName=document.getElementById("signupFullName").value.trim().replace(/\s+/g," ");
+ const enteredPhone=document.getElementById("signupPhone").value.trim();
+ const compactPhone=enteredPhone.replace(/[\s()\-]/g,"");
+ const email=document.getElementById("signupEmail").value.trim().toLowerCase();
+ const password=document.getElementById("signupPassword").value;
+ const confirmPassword=document.getElementById("signupConfirmPassword").value;
+ const status=document.getElementById("signupStatus");
+ const button=document.getElementById("signupSubmitBtn");
+
+ status.className="status error";
+ status.textContent="";
+
+ if(fullName.length<3||fullName.split(" ").length<2){
+   status.textContent="اكتب الاسم الكامل بشكل صحيح.";
+   return;
+ }
+
+ if(!/^(?:\+964|00964|0)7[3-9]\d{8}$/.test(compactPhone)){
+   status.textContent="اكتب رقم هاتف عراقي صحيح، مثال: 07XXXXXXXXX.";
+   return;
+ }
+
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+   status.textContent="اكتب بريداً إلكترونياً صحيحاً.";
+   return;
+ }
+
+ if(password.length<8){
+   status.textContent="كلمة المرور يجب أن تكون 8 أحرف على الأقل.";
+   return;
+ }
+
+ if(password!==confirmPassword){
+   status.textContent="كلمتا المرور غير متطابقتين.";
+   return;
+ }
+
+ const phone=compactPhone.startsWith("00964")
+   ?"+964"+compactPhone.slice(5)
+   :compactPhone.startsWith("0")
+     ?"+964"+compactPhone.slice(1)
+     :compactPhone;
+
+ button.disabled=true;
+ button.textContent="جاري إنشاء الحساب...";
+
+ try{
+   const {data,error}=await db.auth.signUp({
+     email,
+     password,
+     options:{
+       data:{
+         full_name:fullName,
+         phone,
+         role:"customer"
+       }
+     }
+   });
+
+   if(error)throw error;
+
+   if(data.session){
+     await checkUser();
+     document.getElementById("signupForm").reset();
+     closeModal("loginModal");
+     return;
+   }
+
+   status.className="status success";
+   status.textContent="تم إنشاء الحساب، تحقق من بريدك الإلكتروني لتأكيد الحساب";
+   document.getElementById("signupForm").reset();
+ }catch(error){
+   status.className="status error";
+   status.textContent="❌ "+(error.message||"تعذر إنشاء الحساب حالياً.");
+ }finally{
+   button.disabled=false;
+   button.textContent="إنشاء الحساب";
+ }
 }
 
 async function logout(){
